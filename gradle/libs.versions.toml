@@ -2,6 +2,7 @@
 #jetbrains
 eventbusVersion = "3.3.1"
 expressAudioVersion = "3.15.0"
+javaWebsocketVersion = "1.5.6"
 kotlin = "1.9.0"
 kotlinxSerializationJson = "1.5.1"
 #Simple tools
@@ -25,6 +26,7 @@ app-version-versionName = "1.0.0"
 #Simple Mobile Tools
 eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbusVersion" }
 express-audio = { module = "im.zego:express-audio", version.ref = "expressAudioVersion" }
+java-websocket = { module = "org.java-websocket:Java-WebSocket", version.ref = "javaWebsocketVersion" }
 simple-tools-commons = { module = "com.github.SimpleMobileTools:Simple-Commons", version.ref = "simple-commons" }
 #Kotlin
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }

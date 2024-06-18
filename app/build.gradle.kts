@@ -100,4 +100,5 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.express.audio)
     implementation(libs.eventbus)
+    implementation(libs.java.websocket)
 }
