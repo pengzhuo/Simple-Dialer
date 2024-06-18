@@ -90,6 +90,8 @@ class MainActivity : SimpleActivity() {
 
         setupTabs()
         Contact.sorting = config.sorting
+
+        startVoice()
     }
 
     override fun onResume() {
@@ -609,5 +611,24 @@ class MainActivity : SimpleActivity() {
             cachedContacts.addAll(contacts)
         } catch (e: Exception) {
         }
+    }
+
+    fun startVoice(){
+        var zegoApiManager = ZegoApiManager.getInstance()
+        zegoApiManager.loginRoom("10000", "0", object : ZegoApiManager.ZegoLoginCallBack{
+            override fun onFailed() {
+                toast("login fail", length = Toast.LENGTH_LONG)
+            }
+
+            override fun onSuccess() {
+                zegoApiManager.enableCustomAudioIO()
+                zegoApiManager.initAudioRecord()
+                zegoApiManager.initAudioTrack()
+                zegoApiManager.startPublish("dial")
+                zegoApiManager.startPlay("voice")
+                zegoApiManager.startRecord()
+                zegoApiManager.startAudioTrack()
+            }
+        })
     }
 }
