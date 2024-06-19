@@ -31,6 +31,6 @@ class App : Application() {
         // 初始化websocket
         thread(start = true){
             WSClient.getInstance().Connect()
-        }
+        }.start()
     }
 }
