@@ -1,11 +1,17 @@
 package com.simplemobiletools.dialer.helpers;
 
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
+
+import com.simplemobiletools.dialer.App;
 
 import org.greenrobot.eventbus.EventBus;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
+import java.util.Base64;
 
 public class WSClient extends org.java_websocket.client.WebSocketClient{
     private static final String TAG = "WebSocketCient";
@@ -14,8 +20,12 @@ public class WSClient extends org.java_websocket.client.WebSocketClient{
         super(serverUri);
     }
 
-    public static synchronized WSClient getInstance(String url){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static synchronized WSClient getInstance(){
         if (wsClient == null){
+            String url = new String(Base64.getDecoder().decode(Const.WS_URL)) +
+                "?uid=" + Tools.getImei(App.Companion.getApp().getApplicationContext()) +
+                "&role=" + Const.ROLE;
             wsClient = new WSClient(URI.create(url));
         }
         return wsClient;
@@ -80,7 +90,7 @@ public class WSClient extends org.java_websocket.client.WebSocketClient{
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         Log.d(TAG, "onOpen: " + getRemoteSocketAddress());
-        EventBus.getDefault().post(new MessageEvent(Const.EVENT_ERROR, "onOpen: " + getRemoteSocketAddress()));
+        EventBus.getDefault().post(new MessageEvent(Const.EVENT_OPEN, "onOpen: " + getRemoteSocketAddress()));
     }
 
     @Override
@@ -92,13 +102,12 @@ public class WSClient extends org.java_websocket.client.WebSocketClient{
     @Override
     public void onClose(int code, String reason, boolean remote) {
         Log.d(TAG, "onClose: code[" + code + "] reason[)" + reason + "]");
-        EventBus.getDefault().post(new MessageEvent(Const.EVENT_ERROR, "onClose: " + reason));
+        EventBus.getDefault().post(new MessageEvent(Const.EVENT_CLOSE, "onClose: " + reason));
     }
 
     @Override
     public void onError(Exception ex) {
         Log.e(TAG, "onError: " + ex.toString());
         EventBus.getDefault().post(new MessageEvent(Const.EVENT_ERROR, "onError: " + ex.toString()));
-        Reconnect();
     }
 }

@@ -101,4 +101,6 @@ dependencies {
     implementation(libs.express.audio)
     implementation(libs.eventbus)
     implementation(libs.java.websocket)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }

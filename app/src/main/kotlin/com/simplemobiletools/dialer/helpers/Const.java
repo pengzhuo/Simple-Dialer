@@ -5,11 +5,13 @@ public class Const {
     public static final String WS_URL = "d3M6Ly84LjE0OC4yMS4xODg6OTAwMQ==";
     public static final int HEART_TIME = 1000;
     // 类型 0 拨号端 1 声音端
-    public static int ROLE = 0;
-    public static final int EVENT_MSG = 1;
-    public static final int EVENT_ERROR = 2;
-    public static long zegoAppId = 0;
-    public static String zegoAppSign = null;
+    public static final int ROLE = 0;
+    public static final int EVENT_OPEN = 1;
+    public static final int EVENT_MSG = 2;
+    public static final int EVENT_CLOSE = 3;
+    public static final int EVENT_ERROR = 4;
+    public static long zegoAppId = 956952362;
+    public static String zegoAppSign = "29cfdd3a8b2a28a4cc076ffb94f91650e5ebc772274e37d90480593af6fec833";
     public static String voice = null;
 
     public static final String VOICE_LOGIN = "voice_login"; //登录

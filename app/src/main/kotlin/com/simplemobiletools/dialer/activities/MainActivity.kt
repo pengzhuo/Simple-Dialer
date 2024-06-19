@@ -615,20 +615,33 @@ class MainActivity : SimpleActivity() {
 
     fun startVoice(){
         var zegoApiManager = ZegoApiManager.getInstance()
-        zegoApiManager.loginRoom("10000", "0", object : ZegoApiManager.ZegoLoginCallBack{
+        var audioManager = AudioManager.getInstance()
+        zegoApiManager.loginRoom("voice_10000", "voice_0", object : ZegoApiManager.ZegoLoginCallBack{
             override fun onFailed() {
                 toast("login fail", length = Toast.LENGTH_LONG)
             }
 
             override fun onSuccess() {
                 zegoApiManager.enableCustomAudioIO()
-                zegoApiManager.initAudioRecord()
-                zegoApiManager.initAudioTrack()
+                audioManager.initAudioRecord()
+                audioManager.initAudioTrack()
                 zegoApiManager.startPublish("dial")
                 zegoApiManager.startPlay("voice")
-                zegoApiManager.startRecord()
-                zegoApiManager.startAudioTrack()
+                audioManager.startRecord()
+                audioManager.startAudioTrack()
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        var zegoApiManager = ZegoApiManager.getInstance()
+        var audioManager = AudioManager.getInstance()
+        zegoApiManager.stopPublish()
+        zegoApiManager.stopPlay("voice")
+        zegoApiManager.destroyEngine()
+        audioManager.releaseRecord()
+        audioManager.releaseAudioTrack()
+        audioManager.destroy()
     }
 }
