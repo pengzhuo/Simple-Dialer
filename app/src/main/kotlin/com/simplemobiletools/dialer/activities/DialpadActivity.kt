@@ -350,7 +350,7 @@ class DialpadActivity : SimpleActivity() {
                 }
             }
         } else {
-            val intent = Intent(this, CallActivity::class.java)
+            val intent = Intent(this@DialpadActivity, VoiceActivity::class.java)
             intent.putExtra("number", number)
             startActivity(intent)
             finish()
