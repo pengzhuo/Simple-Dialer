@@ -3,22 +3,18 @@ package com.simplemobiletools.dialer.helpers;
 import static im.zego.zegoexpress.constants.ZegoAudioSampleRate.ZEGO_AUDIO_SAMPLE_RATE_44K;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONObject;
+import com.simplemobiletools.dialer.App;
 
 import java.nio.ByteBuffer;
-import java.util.Base64;
 
 import im.zego.zegoexpress.entity.ZegoAudioFrameParam;
 
@@ -43,7 +39,7 @@ public class AudioManager {
 
     private AudioManager(){
         zegoApiManager = ZegoApiManager.getInstance();
-        EventBus.getDefault().register(this);
+        audioManager = (android.media.AudioManager) App.Companion.getApp().getSystemService(Context.AUDIO_SERVICE);
     }
 
     public static synchronized AudioManager getInstance(){
@@ -54,7 +50,15 @@ public class AudioManager {
     }
 
     public void destroy(){
-        EventBus.getDefault().unregister(this);
+
+    }
+
+    public void setMicrophoneMute(boolean mute){
+        audioManager.setMicrophoneMute(mute);
+    }
+
+    public void setSpeakerphoneOn(boolean on){
+        audioManager.setSpeakerphoneOn(on);
     }
 
     @SuppressLint("MissingPermission")
@@ -82,18 +86,13 @@ public class AudioManager {
                 }
                 audioRecord.startRecording();
                 while (!isEnd){
-                    try {
-                        if (Const.voice != null){
-                            byte[] bytes = new byte[audioBufferCacheSize];
-                            audioRecord.read(bytes, 0, bytes.length);
-                            JSONObject jsonObject = new JSONObject();
-                            jsonObject.put("cmd", Const.VOICE_CHANGE);
-                            jsonObject.put("voice", Base64.getEncoder().encodeToString(bytes));
-//                            VoiceApplication.webSocketClient.send(jsonObject.toString());
-                        }
-                    }catch (Exception e){
-                        Log.e(TAG, e.getMessage());
-                    }
+                    byte[] bytes = new byte[recordBufferSize];
+                    audioRecord.read(bytes, 0, bytes.length);
+                    pcmBuffer.clear();
+                    pcmBuffer.put(bytes, 0, recordBufferSize);
+                    audioFrameParam.sampleRate = ZEGO_AUDIO_SAMPLE_RATE_44K;
+                    pcmBuffer.flip();
+                    zegoApiManager.sendCustomAudioCapturePCMData(pcmBuffer, recordBufferSize, audioFrameParam);
                 }
             }
         }).start();
@@ -157,33 +156,6 @@ public class AudioManager {
             mAudioTrack.stop();
             mAudioTrack.release();
             mAudioTrack = null;
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void MessageEventBus(MessageEvent messageEvent) {
-        switch (messageEvent.getNumber()) {
-            case Const.EVENT_MSG:
-                try {
-                    JSONObject jsonObject = new JSONObject(messageEvent.getMessage());
-                    String cmd = jsonObject.getString("cmd");
-                    if (cmd.equals(Const.VOICE_CHANGE)) {
-                        byte[] bytes = Base64.getDecoder().decode(jsonObject.getString("message"));
-                        if (bytes != null && bytes.length > 0) {
-                            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(bytes.length);
-                            byteBuffer.put(bytes, 0, bytes.length);
-                            audioFrameParam.sampleRate = ZEGO_AUDIO_SAMPLE_RATE_44K;
-                            byteBuffer.flip();
-                            zegoApiManager.sendCustomAudioCapturePCMData(byteBuffer, bytes.length, audioFrameParam);
-                        }
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, e.toString());
-                }
-                break;
-            case Const.EVENT_ERROR:
-                break;
         }
     }
 }

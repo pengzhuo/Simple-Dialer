@@ -96,6 +96,7 @@ public class VoiceActivity extends Activity {
             public void onClick(View v) {
                 mic_flag = !mic_flag;
                 toggle_microphone.setImageResource(mic_flag ? R.drawable.ic_microphone_vector : R.drawable.ic_microphone_off_vector);
+                audioManager.setMicrophoneMute(mic_flag);
             }
         });
 
@@ -106,6 +107,7 @@ public class VoiceActivity extends Activity {
             public void onClick(View v) {
                 speaker_flag = !speaker_flag;
                 toggle_speaker.setImageResource(speaker_flag ? R.drawable.ic_volume_up_vector : R.drawable.ic_volume_down_vector);
+                audioManager.setSpeakerphoneOn(speaker_flag);
             }
         });
 
