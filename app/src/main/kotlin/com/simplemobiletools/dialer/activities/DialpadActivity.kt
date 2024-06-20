@@ -28,6 +28,7 @@ import com.simplemobiletools.dialer.R
 import com.simplemobiletools.dialer.adapters.ContactsAdapter
 import com.simplemobiletools.dialer.databinding.ActivityDialpadBinding
 import com.simplemobiletools.dialer.extensions.*
+import com.simplemobiletools.dialer.helpers.Const
 import com.simplemobiletools.dialer.helpers.DIALPAD_TONE_LENGTH_MS
 import com.simplemobiletools.dialer.helpers.ToneGeneratorHelper
 import com.simplemobiletools.dialer.models.SpeedDial
@@ -328,24 +329,31 @@ class DialpadActivity : SimpleActivity() {
     }
 
     private fun initCall(number: String = binding.dialpadInput.value, handleIndex: Int) {
-        if (number.isNotEmpty()) {
-            if (handleIndex != -1 && areMultipleSIMsAvailable()) {
-                if (config.showCallConfirmation) {
-                    CallConfirmationDialog(this, number) {
+        if (Const.ACTION_TYPE == 0){
+            if (number.isNotEmpty()) {
+                if (handleIndex != -1 && areMultipleSIMsAvailable()) {
+                    if (config.showCallConfirmation) {
+                        CallConfirmationDialog(this, number) {
+                            callContactWithSim(number, handleIndex == 0)
+                        }
+                    } else {
                         callContactWithSim(number, handleIndex == 0)
                     }
                 } else {
-                    callContactWithSim(number, handleIndex == 0)
-                }
-            } else {
-                if (config.showCallConfirmation) {
-                    CallConfirmationDialog(this, number) {
+                    if (config.showCallConfirmation) {
+                        CallConfirmationDialog(this, number) {
+                            startCallIntent(number)
+                        }
+                    } else {
                         startCallIntent(number)
                     }
-                } else {
-                    startCallIntent(number)
                 }
             }
+        } else {
+            val intent = Intent(this, CallActivity::class.java)
+            intent.putExtra("number", number)
+            startActivity(intent)
+            finish()
         }
     }
 
