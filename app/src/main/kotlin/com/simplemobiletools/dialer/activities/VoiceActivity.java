@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.Group;
 
 import com.simplemobiletools.commons.views.MyTextView;
 import com.simplemobiletools.dialer.R;
@@ -49,6 +50,7 @@ public class VoiceActivity extends Activity {
     private ConstraintLayout ongoing_call_holder;
     private ZegoApiManager zegoApiManager;
     private AudioManager audioManager;
+    private Group controls_single_call;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +69,8 @@ public class VoiceActivity extends Activity {
         dialpad_wrapper = findViewById(R.id.dialpad_wrapper);
         ongoing_call_holder = findViewById(R.id.ongoing_call_holder);
         ongoing_call_holder.setVisibility(View.VISIBLE);
+        controls_single_call = findViewById(R.id.controls_single_call);
+        controls_single_call.setVisibility(View.VISIBLE);
 
         //修改头像
         caller_avatar = findViewById(R.id.caller_avatar);
@@ -150,6 +154,7 @@ public class VoiceActivity extends Activity {
 
         //通话管理按钮
         call_manager = findViewById(R.id.call_manage);
+        call_manager.setVisibility(View.VISIBLE);
         call_manager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
