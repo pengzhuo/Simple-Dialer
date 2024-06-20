@@ -21,16 +21,15 @@ class App : Application() {
         super.onCreate()
         checkUseEnglish()
         application = this
-
+        init()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun init(){
         // 初始化zego sdk
         ZegoApiManager.getInstance().initEngine()
         // 初始化websocket
-        thread(start = true){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WSClient.getInstance().Connect()
-        }.start()
+        }
     }
 }
