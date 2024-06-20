@@ -32,12 +32,13 @@ public class WSClient extends org.java_websocket.client.WebSocketClient{
     }
 
     public boolean Connect(){
+        Log.d(TAG, "WSClient Connect...");
         boolean flag = false;
         try {
             wsClient.connectBlocking();
             flag = true;
         }catch (Exception e){
-            Log.e(TAG, e.toString());
+            e.printStackTrace();
             flag = false;
         }
         return flag;
