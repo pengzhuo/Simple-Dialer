@@ -114,9 +114,11 @@ public class VoiceActivity extends Activity {
         dialpad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialpad_flag = true;
-                dialpad_wrapper.setVisibility(View.VISIBLE);
-                ongoing_call_holder.setVisibility(View.INVISIBLE);
+                if (!dialpad_flag){
+                    dialpad_flag = true;
+                    dialpad_wrapper.setVisibility(View.VISIBLE);
+                    ongoing_call_holder.setVisibility(View.INVISIBLE);
+                }
             }
         });
 
@@ -125,9 +127,11 @@ public class VoiceActivity extends Activity {
         dialpad_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialpad_flag = false;
-                dialpad_wrapper.setVisibility(View.GONE);
-                ongoing_call_holder.setVisibility(View.VISIBLE);
+                if (dialpad_flag){
+                    dialpad_flag = false;
+                    dialpad_wrapper.setVisibility(View.GONE);
+                    ongoing_call_holder.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -143,7 +147,7 @@ public class VoiceActivity extends Activity {
 
         //添加通话按钮
         call_add = findViewById(R.id.call_add);
-        call_end.setOnClickListener(new View.OnClickListener() {
+        call_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(VoiceActivity.this, DialpadActivity.class);
