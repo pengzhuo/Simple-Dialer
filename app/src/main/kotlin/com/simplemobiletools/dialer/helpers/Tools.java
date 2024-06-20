@@ -6,8 +6,6 @@ import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 
-import androidx.annotation.RequiresApi;
-
 import java.util.UUID;
 
 public class Tools {
@@ -22,9 +20,15 @@ public class Tools {
         return id;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static String getImei(Context context){
-        @SuppressLint("ServiceCast") TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELECOM_SERVICE);
-        return telephonyManager.getImei();
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (telephonyManager != null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                return telephonyManager.getImei();
+            }else{
+                return telephonyManager.getDeviceId();
+            }
+        }
+        return getAndroidId(context);
     }
 }
