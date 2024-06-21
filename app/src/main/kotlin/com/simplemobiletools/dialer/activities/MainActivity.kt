@@ -8,12 +8,14 @@ import android.content.res.Configuration
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Icon
 import android.graphics.drawable.LayerDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.snackbar.Snackbar
 import com.simplemobiletools.commons.dialogs.ChangeViewTypeDialog
@@ -39,6 +41,9 @@ import com.simplemobiletools.dialer.fragments.MyViewPagerFragment
 import com.simplemobiletools.dialer.fragments.RecentsFragment
 import com.simplemobiletools.dialer.helpers.*
 import me.grantland.widget.AutofitHelper
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class MainActivity : SimpleActivity() {
     private val binding by viewBinding(ActivityMainBinding::inflate)
@@ -90,6 +95,8 @@ class MainActivity : SimpleActivity() {
 
         setupTabs()
         Contact.sorting = config.sorting
+
+        EventBus.getDefault().register(this)
     }
 
     override fun onResume() {
@@ -613,7 +620,21 @@ class MainActivity : SimpleActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        EventBus.getDefault().unregister(this)
         ZegoApiManager.getInstance().destroyEngine()
         AudioManager.getInstance().destroy()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEvent(event: MessageEvent){
+        when(event.number){
+            Const.EVENT_ERROR -> {
+                WSClient.getInstance().Reconnect()
+            }
+            Const.EVENT_MSG -> {
+
+            }
+        }
     }
 }

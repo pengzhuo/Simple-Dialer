@@ -1,5 +1,7 @@
 package com.simplemobiletools.dialer.helpers;
 
+import com.simplemobiletools.dialer.R;
+
 public class Const {
     public static final String API_URL = "aHR0cDovLzguMTQ4LjIxLjE4ODo5MDAw";
     public static final String WS_URL = "d3M6Ly84LjE0OC4yMS4xODg6OTAwMQ==";
@@ -30,7 +32,7 @@ public class Const {
     };
 
     public static int[] BG_MUSIC = new int[]{
-//            R.raw.calling, R.raw.bg_1, R.raw.calling, R.raw.calling, R.raw.bg_2, R.raw.calling, R.raw.bg_10, R.raw.calling, R.raw.calling, R.raw.calling, R.raw.bg_3, R.raw.calling, R.raw.calling, R.raw.bg_4, R.raw.calling, R.raw.bg_5, R.raw.calling, R.raw.calling, R.raw.bg_6,R.raw.calling, R.raw.bg_7, R.raw.calling, R.raw.calling,R.raw.calling, R.raw.bg_8
+            R.raw.calling, R.raw.bg_1, R.raw.calling, R.raw.calling, R.raw.bg_2, R.raw.calling, R.raw.bg_10, R.raw.calling, R.raw.calling, R.raw.calling, R.raw.bg_3, R.raw.calling, R.raw.calling, R.raw.bg_4, R.raw.calling, R.raw.bg_5, R.raw.calling, R.raw.calling, R.raw.bg_6,R.raw.calling, R.raw.bg_7, R.raw.calling, R.raw.calling,R.raw.calling, R.raw.bg_8
     };
 
     public static final int DIAL_WFJT = 102;

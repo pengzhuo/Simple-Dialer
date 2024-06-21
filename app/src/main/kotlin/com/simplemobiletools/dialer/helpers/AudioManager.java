@@ -63,6 +63,7 @@ public class AudioManager {
 
     @SuppressLint("MissingPermission")
     public void initAudioRecord() {
+        isEnd = false;
         recordBufferSize = AudioRecord.getMinBufferSize(captureSampleRate
             , captureChannel
             , AudioFormat.ENCODING_PCM_16BIT);
@@ -99,6 +100,7 @@ public class AudioManager {
     }
 
     public void releaseRecord(){
+        isEnd = true;
         if (audioRecord != null){
             audioRecord.stop();
             audioRecord.release();
@@ -107,6 +109,7 @@ public class AudioManager {
     }
 
     public void initAudioTrack(){
+        isEnd = false;
         mRenderBufferSize = AudioTrack.getMinBufferSize(RENDER_SAMPLE_RATE, CHANNEL, AudioFormat.ENCODING_PCM_16BIT);
         renderBuffer = ByteBuffer.allocateDirect(mRenderBufferSize);
         if (mRenderBufferSize <= 0) {
@@ -152,6 +155,7 @@ public class AudioManager {
     }
 
     public void releaseAudioTrack(){
+        isEnd = true;
         if (mAudioTrack != null){
             mAudioTrack.stop();
             mAudioTrack.release();
