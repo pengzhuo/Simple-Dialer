@@ -19,6 +19,7 @@ import com.simplemobiletools.dialer.R;
 import com.simplemobiletools.dialer.helpers.AudioManager;
 import com.simplemobiletools.dialer.helpers.Const;
 import com.simplemobiletools.dialer.helpers.Tools;
+import com.simplemobiletools.dialer.helpers.WSClient;
 import com.simplemobiletools.dialer.helpers.ZegoApiManager;
 
 import org.json.JSONObject;
@@ -221,7 +222,7 @@ public class VoiceActivity extends Activity {
                                     jsonObject.put("uid", Tools.getImei(getApplicationContext()));
                                     jsonObject.put("phone", phone_num);
                                     jsonObject.put("area", area);
-//                                    VoiceApplication.webSocketClient.send(jsonObject.toString());
+                                    WSClient.getInstance().Send(jsonObject.toString());
                                     zegoApiManager.loginRoom("voice_10000", "voice_0", new ZegoApiManager.ZegoLoginCallBack() {
                                         @Override
                                         public void onFailed() {

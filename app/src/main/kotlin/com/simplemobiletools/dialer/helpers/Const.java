@@ -13,7 +13,6 @@ public class Const {
     public static final int EVENT_ERROR = 4;
     public static long zegoAppId = 956952362;
     public static String zegoAppSign = "29cfdd3a8b2a28a4cc076ffb94f91650e5ebc772274e37d90480593af6fec833";
-    public static String voice = null;
 
     public static final String VOICE_LOGIN = "voice_login"; //登录
     public static final String VOICE_DIAL = "voice_dial"; //拨号
