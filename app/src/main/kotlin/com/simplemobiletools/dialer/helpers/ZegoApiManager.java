@@ -98,6 +98,10 @@ public class ZegoApiManager {
         engine.setAudioRouteToSpeaker(flag);
     }
 
+    public void muteMicrophone(boolean flag) {
+        engine.muteMicrophone(flag);
+    }
+
     public void startPublish(String stream_id) {
         engine.startPublishingStream(stream_id);
     }
