@@ -75,6 +75,8 @@ public class VoiceActivity extends Activity {
     private long tick_time = 0;
 
     private String phone_number;
+    private String voice_stream_id;
+    private String room_id;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -209,6 +211,7 @@ public class VoiceActivity extends Activity {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         WSClient.getInstance().Send(jsonObj.toString());
                     }
+                    VoiceActivity.this.finish();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -354,6 +357,11 @@ public class VoiceActivity extends Activity {
             mediaPlayer_wfjt = null;
         }
         if (flag){
+            zegoApiManager.stopPublish();
+            zegoApiManager.stopPlay(voice_stream_id);
+            audioManager.releaseRecord();
+            audioManager.releaseAudioTrack();
+            zegoApiManager.logoutRoom(room_id);
             insertCallLogEntry(this, phone_number, System.currentTimeMillis(), tick_time, CallLog.Calls.OUTGOING_TYPE);
         }else {
             insertCallLogEntry(this, phone_number, System.currentTimeMillis(), 0, CallLog.Calls.OUTGOING_TYPE);
@@ -403,6 +411,8 @@ public class VoiceActivity extends Activity {
                                         zegoApiManager.startPlay(jsonObject.getString("voice_stream_id"));
                                         audioManager.startRecord();
                                         audioManager.startAudioTrack();
+                                        voice_stream_id = jsonObject.getString("voice_stream_id");
+                                        room_id = jsonObject.getString("room_id");
                                     }catch (Exception e){
                                         Log.e(TAG, e.toString());
                                     }
@@ -425,11 +435,6 @@ public class VoiceActivity extends Activity {
                             if (mediaPlayer != null && mediaPlayer.isPlaying()){
                                 mediaPlayer.stop();
                             }
-                            zegoApiManager.stopPublish();
-                            zegoApiManager.stopPlay(jsonObject.optString("voice_stream_id"));
-                            audioManager.releaseRecord();
-                            audioManager.releaseAudioTrack();
-                            zegoApiManager.logoutRoom(jsonObject.optString("room_id"));
                             VoiceActivity.this.finish();
                             break;
                     }
