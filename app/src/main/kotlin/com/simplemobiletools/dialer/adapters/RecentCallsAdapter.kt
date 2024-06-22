@@ -353,6 +353,12 @@ class RecentCallsAdapter(
             overflowMenuIcon.setOnClickListener {
                 showPopupMenu(overflowMenuAnchor, call)
             }
+
+            itemRecentsArea.apply{
+                text = call.area
+                setTextColor(textColor)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, currentFontSize)
+            }
         }
     }
 

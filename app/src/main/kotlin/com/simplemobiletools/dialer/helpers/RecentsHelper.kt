@@ -53,7 +53,8 @@ class RecentsHelper(private val context: Context) {
             Calls.DATE,
             Calls.DURATION,
             Calls.TYPE,
-            Calls.PHONE_ACCOUNT_ID
+            Calls.PHONE_ACCOUNT_ID,
+            Calls.GEOCODED_LOCATION
         )
 
         val accountIdToSimIDMap = HashMap<String, Int>()
@@ -147,6 +148,10 @@ class RecentsHelper(private val context: Context) {
                     previousStartTS = startTS
                 }
 
+                var area = cursor.getStringValueOrNull(Calls.GEOCODED_LOCATION)
+                if (area.isNullOrEmpty()){
+                    area = ""
+                }
                 val duration = cursor.getIntValue(Calls.DURATION)
                 val type = cursor.getIntValue(Calls.TYPE)
                 val accountId = cursor.getStringValue(Calls.PHONE_ACCOUNT_ID)
@@ -177,7 +182,8 @@ class RecentsHelper(private val context: Context) {
                     simID = simID,
                     specificNumber = specificNumber,
                     specificType = specificType,
-                    isUnknownNumber = isUnknownNumber
+                    isUnknownNumber = isUnknownNumber,
+                    area = area
                 )
 
                 // if we have multiple missed calls from the same number, show it just once
@@ -235,6 +241,7 @@ class RecentsHelper(private val context: Context) {
                                 put(Calls.DATE, it.startTS.toLong() * 1000L)
                                 put(Calls.DURATION, it.duration)
                                 put(Calls.CACHED_NAME, it.name)
+                                put(Calls.GEOCODED_LOCATION, it.area)
                             }
                         }.toTypedArray()
 

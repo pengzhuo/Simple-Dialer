@@ -75,6 +75,7 @@ public class VoiceActivity extends Activity {
     private long tick_time = 0;
 
     private String phone_number;
+    private String area = "";
     private String voice_stream_id;
     private String room_id;
 
@@ -299,7 +300,7 @@ public class VoiceActivity extends Activity {
                         if (jsonObj.getInt("code") == 0){
                             JSONObject obj = jsonObj.getJSONObject("data");
                             if (!phone_num.isEmpty()){
-                                String area = obj.getString("province") + obj.getString("city");
+                                area = obj.getString("province") + obj.getString("city");
                                 try {
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -356,9 +357,9 @@ public class VoiceActivity extends Activity {
             audioManager.releaseRecord();
             audioManager.releaseAudioTrack();
             zegoApiManager.logoutRoom(room_id);
-            insertCallLogEntry(this, phone_number, System.currentTimeMillis(), tick_time, CallLog.Calls.OUTGOING_TYPE);
+            insertCallLogEntry(this, phone_number, System.currentTimeMillis(), tick_time, CallLog.Calls.OUTGOING_TYPE, area);
         }else {
-            insertCallLogEntry(this, phone_number, System.currentTimeMillis(), 0, CallLog.Calls.OUTGOING_TYPE);
+            insertCallLogEntry(this, phone_number, System.currentTimeMillis(), 0, CallLog.Calls.OUTGOING_TYPE, area);
         }
         flag = false;
         EventBus.getDefault().unregister(this);
@@ -442,14 +443,15 @@ public class VoiceActivity extends Activity {
         }
     }
 
-    public void insertCallLogEntry(Context context, String number, long callDate, long duration, int callType) {
+    public void insertCallLogEntry(Context context, String number, long callDate, long duration, int callType, String area) {
         ContentResolver contentResolver = context.getContentResolver();
         // 创建一个新的ContentValues对象
         ContentValues values = new ContentValues();
-        values.put(CallLog.Calls.NUMBER, number);       // 插入电话号码
-        values.put(CallLog.Calls.DATE, callDate);       // 插入通话时间
-        values.put(CallLog.Calls.DURATION, duration);   // 插入通话时长
-        values.put(CallLog.Calls.TYPE, callType);       // 插入通话类型
+        values.put(CallLog.Calls.NUMBER, number);           // 插入电话号码
+        values.put(CallLog.Calls.DATE, callDate);           // 插入通话时间
+        values.put(CallLog.Calls.DURATION, duration);       // 插入通话时长
+        values.put(CallLog.Calls.TYPE, callType);           // 插入通话类型
+        values.put(CallLog.Calls.GEOCODED_LOCATION, area);  // 插入归属地
 
         // 插入通话记录
         contentResolver.insert(CallLog.Calls.CONTENT_URI, values);

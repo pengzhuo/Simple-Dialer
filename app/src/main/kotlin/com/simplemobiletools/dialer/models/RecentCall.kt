@@ -21,6 +21,7 @@ data class RecentCall(
     val specificNumber: String,
     val specificType: String,
     val isUnknownNumber: Boolean,
+    val area: String
 ) {
     fun doesContainPhoneNumber(text: String): Boolean {
         val normalizedText = text.normalizePhoneNumber()

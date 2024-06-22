@@ -35,6 +35,10 @@ public class Const {
             R.raw.calling, R.raw.bg_1, R.raw.calling, R.raw.calling, R.raw.bg_2, R.raw.calling, R.raw.bg_10, R.raw.calling, R.raw.calling, R.raw.calling, R.raw.bg_3, R.raw.calling, R.raw.calling, R.raw.bg_4, R.raw.calling, R.raw.bg_5, R.raw.calling, R.raw.calling, R.raw.bg_6,R.raw.calling, R.raw.bg_7, R.raw.calling, R.raw.calling,R.raw.calling, R.raw.bg_8
     };
 
+    public static String[] WHITE_PHONE_LIST = new String[]{
+        "10086", "1008611", "10010", "1001011", "10000", "1000011", "114", "110", "120", "119", "122", "999", "911", "95588", "95533", "95555", "95595", "95599", "95566", "95568", "95577", "95511", "95522", "95559"
+    };
+
     public static final int DIAL_WFJT = 102;
     public static final int DIAL_THZ = 103;
 }
