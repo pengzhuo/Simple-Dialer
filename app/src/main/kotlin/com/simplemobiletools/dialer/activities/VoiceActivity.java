@@ -256,12 +256,6 @@ public class VoiceActivity extends Activity {
             public void run() {
                 if (flag){
                     try {
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("cmd", Const.VOICE_HEART);
-                        jsonObject.put("role", Const.ROLE);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            WSClient.getInstance().Send(jsonObject.toString());
-                        }
                         tick_time += 1;
                         long m = tick_time / 60;
                         long s = tick_time % 60;
@@ -277,7 +271,7 @@ public class VoiceActivity extends Activity {
                     }
                 }
             }
-        }, Const.HEART_TIME, Const.HEART_TIME);
+        }, 1000L, 1000L);
     }
 
     private void getPhoneArea(String phone_num){

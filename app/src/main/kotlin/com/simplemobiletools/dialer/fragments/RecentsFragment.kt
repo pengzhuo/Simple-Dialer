@@ -1,7 +1,10 @@
 package com.simplemobiletools.dialer.fragments
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.util.AttributeSet
+import androidx.core.content.ContextCompat.startActivity
 import com.simplemobiletools.commons.dialogs.CallConfirmationDialog
 import com.simplemobiletools.commons.extensions.*
 import com.simplemobiletools.commons.helpers.ContactsHelper
@@ -11,10 +14,13 @@ import com.simplemobiletools.commons.helpers.SMT_PRIVATE
 import com.simplemobiletools.commons.models.contacts.Contact
 import com.simplemobiletools.commons.views.MyRecyclerView
 import com.simplemobiletools.dialer.R
+import com.simplemobiletools.dialer.activities.CallActivity
 import com.simplemobiletools.dialer.activities.SimpleActivity
+import com.simplemobiletools.dialer.activities.VoiceActivity
 import com.simplemobiletools.dialer.adapters.RecentCallsAdapter
 import com.simplemobiletools.dialer.databinding.FragmentRecentsBinding
 import com.simplemobiletools.dialer.extensions.config
+import com.simplemobiletools.dialer.helpers.Const
 import com.simplemobiletools.dialer.helpers.MIN_RECENTS_THRESHOLD
 import com.simplemobiletools.dialer.helpers.RecentsHelper
 import com.simplemobiletools.dialer.interfaces.RefreshItemsListener
@@ -96,10 +102,18 @@ class RecentsFragment(context: Context, attributeSet: AttributeSet) : MyViewPage
                     val recentCall = it as RecentCall
                     if (context.config.showCallConfirmation) {
                         CallConfirmationDialog(activity as SimpleActivity, recentCall.name) {
-                            activity?.launchCallIntent(recentCall.phoneNumber)
+                            if (Const.ACTION_TYPE == 0) {
+                                activity?.launchCallIntent(recentCall.phoneNumber)
+                            } else {
+                                jumpVoiceActivity(activity!!, recentCall.phoneNumber)
+                            }
                         }
                     } else {
-                        activity?.launchCallIntent(recentCall.phoneNumber)
+                        if (Const.ACTION_TYPE == 0) {
+                            activity?.launchCallIntent(recentCall.phoneNumber)
+                        } else {
+                            jumpVoiceActivity(activity!!, recentCall.phoneNumber)
+                        }
                     }
                 }
 
@@ -172,6 +186,12 @@ class RecentsFragment(context: Context, attributeSet: AttributeSet) : MyViewPage
 
         binding.recentsPlaceholder.beVisibleIf(recentCalls.isEmpty())
         recentsAdapter?.updateItems(recentCalls, text)
+    }
+
+    fun jumpVoiceActivity(activity: Activity, number: String) {
+        val intent = Intent(activity, VoiceActivity::class.java)
+        intent.putExtra("number", number)
+        activity.startActivity(intent)
     }
 }
 

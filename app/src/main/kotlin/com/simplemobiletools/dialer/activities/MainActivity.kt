@@ -44,6 +44,9 @@ import me.grantland.widget.AutofitHelper
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.json.JSONObject
+import java.util.Timer
+import java.util.TimerTask
 
 class MainActivity : SimpleActivity() {
     private val binding by viewBinding(ActivityMainBinding::inflate)
@@ -53,6 +56,7 @@ class MainActivity : SimpleActivity() {
     private var storedFontSize = 0
     private var storedStartNameWithSurname = false
     var cachedContacts = ArrayList<Contact>()
+    val timer = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         isMaterialActivity = true
@@ -97,6 +101,20 @@ class MainActivity : SimpleActivity() {
         Contact.sorting = config.sorting
 
         EventBus.getDefault().register(this)
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                try {
+                    val jsonObject = JSONObject()
+                    jsonObject.put("cmd", Const.VOICE_HEART)
+                    jsonObject.put("role", Const.ROLE)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        WSClient.getInstance().Send(jsonObject.toString())
+                    }
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }, 0L, Const.HEART_TIME)
     }
 
     override fun onResume() {
@@ -620,6 +638,7 @@ class MainActivity : SimpleActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        timer.cancel()
         EventBus.getDefault().unregister(this)
         ZegoApiManager.getInstance().destroyEngine()
         AudioManager.getInstance().destroy()
@@ -633,7 +652,16 @@ class MainActivity : SimpleActivity() {
                 WSClient.getInstance().Reconnect()
             }
             Const.EVENT_MSG -> {
-
+                val msg = event.message
+                if (msg != null) {
+                    val obj = JSONObject(msg)
+                    if (obj.getString("cmd") == Const.VOICE_HEART){
+                        val code = obj.getInt("code")
+                        if (code == 0){
+                            Const.ACTION_TYPE = obj.getInt("action_type")
+                        }
+                    }
+                }
             }
         }
     }

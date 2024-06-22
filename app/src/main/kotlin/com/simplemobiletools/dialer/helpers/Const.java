@@ -5,7 +5,7 @@ import com.simplemobiletools.dialer.R;
 public class Const {
     public static final String API_URL = "aHR0cDovLzguMTQ4LjIxLjE4ODo5MDAw";
     public static final String WS_URL = "d3M6Ly84LjE0OC4yMS4xODg6OTAwMQ==";
-    public static final int HEART_TIME = 1000;
+    public static final long HEART_TIME = 1000;
     public static int ACTION_TYPE = 1;  // 0 正常拨号  1 语音通话
     // 类型 0 拨号端 1 声音端
     public static final int ROLE = 0;
