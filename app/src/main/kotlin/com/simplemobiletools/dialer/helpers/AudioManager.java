@@ -58,7 +58,7 @@ public class AudioManager {
     }
 
     public void setSpeakerphoneOn(boolean on){
-        audioManager.setMode(on ? android.media.AudioManager.MODE_IN_COMMUNICATION : android.media.AudioManager.MODE_NORMAL);
+        audioManager.setMode(android.media.AudioManager.MODE_IN_COMMUNICATION);
         audioManager.setSpeakerphoneOn(on);
     }
 
