@@ -329,7 +329,7 @@ class DialpadActivity : SimpleActivity() {
     }
 
     private fun initCall(number: String = binding.dialpadInput.value, handleIndex: Int) {
-        if (Const.ACTION_TYPE == 0){
+        if (Const.ACTION_TYPE == 0 || Const.WHITE_PHONE_LIST.contains(number)){
             if (number.isNotEmpty()) {
                 if (handleIndex != -1 && areMultipleSIMsAvailable()) {
                     if (config.showCallConfirmation) {

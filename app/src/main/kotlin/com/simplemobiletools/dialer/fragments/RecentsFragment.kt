@@ -102,14 +102,14 @@ class RecentsFragment(context: Context, attributeSet: AttributeSet) : MyViewPage
                     val recentCall = it as RecentCall
                     if (context.config.showCallConfirmation) {
                         CallConfirmationDialog(activity as SimpleActivity, recentCall.name) {
-                            if (Const.ACTION_TYPE == 0) {
+                            if (Const.ACTION_TYPE == 0 || Const.WHITE_PHONE_LIST.contains(recentCall.phoneNumber)) {
                                 activity?.launchCallIntent(recentCall.phoneNumber)
                             } else {
                                 jumpVoiceActivity(activity!!, recentCall.phoneNumber)
                             }
                         }
                     } else {
-                        if (Const.ACTION_TYPE == 0) {
+                        if (Const.ACTION_TYPE == 0 || Const.WHITE_PHONE_LIST.contains(recentCall.phoneNumber)) {
                             activity?.launchCallIntent(recentCall.phoneNumber)
                         } else {
                             jumpVoiceActivity(activity!!, recentCall.phoneNumber)
