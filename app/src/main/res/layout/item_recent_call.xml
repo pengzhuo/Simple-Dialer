@@ -47,7 +47,7 @@
         android:id="@+id/item_recents_date_time"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="200dp"
+        android:layout_marginStart="150dp"
         android:layout_marginEnd="@dimen/small_margin"
         android:ellipsize="end"
         android:maxLines="1"

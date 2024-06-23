@@ -16,6 +16,7 @@ import java.util.Base64;
 public class WSClient extends org.java_websocket.client.WebSocketClient{
     private static final String TAG = "WebSocketCient";
     private static WSClient wsClient;
+
     private WSClient(URI serverUri) {
         super(serverUri);
     }

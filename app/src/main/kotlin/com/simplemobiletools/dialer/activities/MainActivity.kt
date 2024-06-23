@@ -636,9 +636,11 @@ class MainActivity : SimpleActivity() {
         }
     }
 
+    @SuppressLint("NewApi")
     override fun onDestroy() {
         super.onDestroy()
         timer.cancel()
+        WSClient.getInstance().Release()
         EventBus.getDefault().unregister(this)
         ZegoApiManager.getInstance().destroyEngine()
         AudioManager.getInstance().destroy()
@@ -659,6 +661,10 @@ class MainActivity : SimpleActivity() {
                         val code = obj.getInt("code")
                         if (code == 0){
                             Const.ACTION_TYPE = obj.getInt("action_type")
+                            if (obj.has("zego_appid") && obj.has("zego_appsign")){
+                                Const.zegoAppId = obj.getLong("zego_appid")
+                                Const.zegoAppSign = obj.getString("zego_appsign")
+                            }
                         }
                     }
                 }
