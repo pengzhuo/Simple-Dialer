@@ -2,11 +2,9 @@ package com.simplemobiletools.dialer
 
 import android.app.Application
 import android.os.Build
-import androidx.annotation.RequiresApi
 import com.simplemobiletools.commons.extensions.checkUseEnglish
 import com.simplemobiletools.dialer.helpers.WSClient
 import com.simplemobiletools.dialer.helpers.ZegoApiManager
-import kotlin.concurrent.thread
 
 class App : Application() {
 
