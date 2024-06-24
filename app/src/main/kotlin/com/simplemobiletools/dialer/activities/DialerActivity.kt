@@ -11,7 +11,6 @@ import com.simplemobiletools.commons.extensions.*
 import com.simplemobiletools.commons.helpers.REQUEST_CODE_SET_DEFAULT_DIALER
 import com.simplemobiletools.dialer.R
 import com.simplemobiletools.dialer.extensions.getHandleToUse
-import com.simplemobiletools.dialer.extensions.isDefaultDialer
 
 class DialerActivity : SimpleActivity() {
     private var callNumber: Uri? = null

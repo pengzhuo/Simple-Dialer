@@ -1,13 +1,11 @@
 package com.simplemobiletools.dialer.extensions
 
 import android.annotation.SuppressLint
-import android.app.role.RoleManager
 import android.content.Context
 import android.media.AudioManager
 import android.net.Uri
 import android.os.PowerManager
 import com.simplemobiletools.commons.extensions.telecomManager
-import com.simplemobiletools.commons.helpers.isQPlus
 import com.simplemobiletools.dialer.helpers.Config
 import com.simplemobiletools.dialer.models.SIMAccount
 
@@ -36,11 +34,6 @@ fun Context.getAvailableSIMCardLabels(): List<SIMAccount> {
     } catch (ignored: Exception) {
     }
     return SIMAccounts
-}
-
-
-fun Context.isDefaultDialer(): Boolean {
-    return telecomManager.defaultDialerPackage == packageName
 }
 
 @SuppressLint("MissingPermission")
