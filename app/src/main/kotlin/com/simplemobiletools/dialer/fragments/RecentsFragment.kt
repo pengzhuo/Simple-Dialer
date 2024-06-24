@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
-import androidx.core.content.ContextCompat.startActivity
 import com.simplemobiletools.commons.dialogs.CallConfirmationDialog
 import com.simplemobiletools.commons.extensions.*
 import com.simplemobiletools.commons.helpers.ContactsHelper
@@ -14,7 +13,6 @@ import com.simplemobiletools.commons.helpers.SMT_PRIVATE
 import com.simplemobiletools.commons.models.contacts.Contact
 import com.simplemobiletools.commons.views.MyRecyclerView
 import com.simplemobiletools.dialer.R
-import com.simplemobiletools.dialer.activities.CallActivity
 import com.simplemobiletools.dialer.activities.SimpleActivity
 import com.simplemobiletools.dialer.activities.VoiceActivity
 import com.simplemobiletools.dialer.adapters.RecentCallsAdapter
