@@ -34,6 +34,7 @@ import com.simplemobiletools.dialer.helpers.ToneGeneratorHelper
 import com.simplemobiletools.dialer.models.SpeedDial
 import java.util.*
 import kotlin.math.roundToInt
+import com.simplemobiletools.dialer.extensions.isDefaultDialer
 
 class DialpadActivity : SimpleActivity() {
     private val binding by viewBinding(ActivityDialpadBinding::inflate)

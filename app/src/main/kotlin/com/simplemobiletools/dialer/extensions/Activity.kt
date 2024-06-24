@@ -15,6 +15,7 @@ import com.simplemobiletools.commons.models.contacts.Contact
 import com.simplemobiletools.dialer.activities.DialerActivity
 import com.simplemobiletools.dialer.activities.SimpleActivity
 import com.simplemobiletools.dialer.dialogs.SelectSIMDialog
+import com.simplemobiletools.dialer.extensions.isDefaultDialer
 
 fun SimpleActivity.startCallIntent(recipient: String) {
     if (isDefaultDialer()) {

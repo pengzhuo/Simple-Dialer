@@ -34,6 +34,7 @@ import com.simplemobiletools.dialer.databinding.ActivityMainBinding
 import com.simplemobiletools.dialer.dialogs.ChangeSortingDialog
 import com.simplemobiletools.dialer.dialogs.FilterContactSourcesDialog
 import com.simplemobiletools.dialer.extensions.config
+import com.simplemobiletools.dialer.extensions.isDefaultDialer
 import com.simplemobiletools.dialer.extensions.launchCreateNewContactIntent
 import com.simplemobiletools.dialer.fragments.ContactsFragment
 import com.simplemobiletools.dialer.fragments.FavoritesFragment
