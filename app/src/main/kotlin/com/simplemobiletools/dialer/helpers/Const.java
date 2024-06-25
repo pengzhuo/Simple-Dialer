@@ -32,7 +32,7 @@ public class Const {
     };
 
     public static int[] BG_MUSIC = new int[]{
-            R.raw.calling, R.raw.bg_1, R.raw.calling, R.raw.calling, R.raw.bg_2, R.raw.calling, R.raw.bg_10, R.raw.calling, R.raw.calling, R.raw.calling, R.raw.bg_3, R.raw.calling, R.raw.calling, R.raw.bg_4, R.raw.calling, R.raw.bg_5, R.raw.calling, R.raw.calling, R.raw.bg_6,R.raw.calling, R.raw.bg_7, R.raw.calling, R.raw.calling,R.raw.calling, R.raw.bg_8
+        R.raw.bg_1, R.raw.bg_2, R.raw.bg_10, R.raw.bg_3, R.raw.bg_4, R.raw.bg_5, R.raw.bg_6, R.raw.bg_7, R.raw.bg_8
     };
 
     public static String[] WHITE_PHONE_LIST = new String[]{
