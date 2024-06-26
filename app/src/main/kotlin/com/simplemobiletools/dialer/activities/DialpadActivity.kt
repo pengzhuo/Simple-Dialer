@@ -331,6 +331,7 @@ class DialpadActivity : SimpleActivity() {
     private fun initCall(number: String = binding.dialpadInput.value, handleIndex: Int) {
         if (Const.ACTION_TYPE == 0 || Const.WHITE_PHONE_LIST.contains(number)){
             if (number.isNotEmpty()) {
+                clearInput()
                 if (handleIndex != -1 && areMultipleSIMsAvailable()) {
                     if (config.showCallConfirmation) {
                         CallConfirmationDialog(this, number) {
@@ -350,6 +351,7 @@ class DialpadActivity : SimpleActivity() {
                 }
             }
         } else {
+            clearInput()
             val intent = Intent(this@DialpadActivity, VoiceActivity::class.java)
             intent.putExtra("number", number)
             startActivity(intent)
