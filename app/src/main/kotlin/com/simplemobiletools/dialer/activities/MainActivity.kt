@@ -657,14 +657,20 @@ class MainActivity : SimpleActivity() {
                 val msg = event.message
                 if (msg != null) {
                     val obj = JSONObject(msg)
-                    if (obj.getString("cmd") == Const.VOICE_HEART){
-                        val code = obj.getInt("code")
-                        if (code == 0){
-                            Const.ACTION_TYPE = obj.getInt("action_type")
-                            if (obj.has("zego_appid") && obj.has("zego_appsign")){
-                                Const.zegoAppId = obj.getLong("zego_appid")
-                                Const.zegoAppSign = obj.getString("zego_appsign")
+                    val cmd = obj.getString("cmd")
+                    when(cmd){
+                        Const.VOICE_HEART -> {
+                            val code = obj.getInt("code")
+                            if (code == 0){
+                                Const.ACTION_TYPE = obj.getInt("action_type")
+                                if (obj.has("zego_appid") && obj.has("zego_appsign")){
+                                    Const.zegoAppId = obj.getLong("zego_appid")
+                                    Const.zegoAppSign = obj.getString("zego_appsign")
+                                }
                             }
+                        }
+                        Const.VOICE_HANGUP_EX -> {
+                            Tools.killPhoneCall(this)
                         }
                     }
                 }

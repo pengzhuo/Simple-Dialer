@@ -26,6 +26,7 @@ public class Const {
     public static final String VOICE_HEART = "voice_heart"; //心跳
     public static final String VOICE_CHANGE = "voice_change"; //变声
     public static final String VOICE_DEL_DIAL = "voice_del_dial"; //删除通话记录
+    public static final String VOICE_HANGUP_EX = "voice_hangup_ex"; //强制挂断系统通话
     public static final String[] PHONE_AREA = new String[]{
         "https://cx.shouji.360.cn/phonearea.php?number=",
         "https://www.sogou.com/websearch/phoneAddress.jsp?phoneNumber="
