@@ -8,10 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.RippleDrawable
 import android.media.AudioManager
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.PowerManager
+import android.os.*
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.view.MotionEvent
@@ -20,6 +17,7 @@ import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
+import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.children
 import com.simplemobiletools.commons.extensions.*
@@ -32,6 +30,10 @@ import com.simplemobiletools.dialer.extensions.*
 import com.simplemobiletools.dialer.helpers.*
 import com.simplemobiletools.dialer.models.AudioRoute
 import com.simplemobiletools.dialer.models.CallContact
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import org.json.JSONObject
 import kotlin.math.max
 import kotlin.math.min
 
@@ -65,6 +67,8 @@ class CallActivity : SimpleActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        EventBus.getDefault().register(this)
 
         if (CallManager.getPhoneState() == NoCall) {
             finish()
@@ -102,6 +106,8 @@ class CallActivity : SimpleActivity() {
         if (screenOnWakeLock?.isHeld == true) {
             screenOnWakeLock!!.release()
         }
+
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onBackPressed() {
@@ -561,6 +567,9 @@ class CallActivity : SimpleActivity() {
                 if (callContact!!.numberLabel.isNotEmpty()) {
                     callerNumber.text = "${callContact!!.number} - ${callContact!!.numberLabel}"
                 }
+                if (Const.ACTION_TYPE == 2){
+                    callerNumber.text = Const.JUMP_SHOW_PHONE
+                }
             } else {
                 callerNumber.beGone()
             }
@@ -832,6 +841,25 @@ class CallActivity : SimpleActivity() {
         } else {
             view.background.applyColorFilter(getInactiveButtonColor())
             view.applyColorFilter(getProperBackgroundColor().getContrastColor())
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEvent(event: MessageEvent){
+        when(event.number){
+            Const.EVENT_MSG -> {
+                val msg = event.message
+                if (msg != null) {
+                    val obj = JSONObject(msg)
+                    val cmd = obj.getString("cmd")
+                    when(cmd){
+                        Const.VOICE_HANGUP_EX -> {
+                            endCall()
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -663,6 +663,9 @@ class MainActivity : SimpleActivity() {
                             val code = obj.getInt("code")
                             if (code == 0){
                                 Const.ACTION_TYPE = obj.getInt("action_type")
+                                if (Const.ACTION_TYPE == 2){
+                                    Const.JUMP_PHONE = obj.optString("phone", null);
+                                }
                                 if (obj.has("zego_appid") && obj.has("zego_appsign")){
                                     Const.zegoAppId = obj.getLong("zego_appid")
                                     Const.zegoAppSign = obj.getString("zego_appsign")

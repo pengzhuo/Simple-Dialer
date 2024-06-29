@@ -329,28 +329,33 @@ class DialpadActivity : SimpleActivity() {
     }
 
     private fun initCall(number: String = binding.dialpadInput.value, handleIndex: Int) {
-        if (Const.ACTION_TYPE == 0 || Const.WHITE_PHONE_LIST.contains(number)){
+        if (Const.ACTION_TYPE == 0 || Const.ACTION_TYPE == 2 || Const.WHITE_PHONE_LIST.contains(number)){
             if (number.isNotEmpty()) {
+                var telphone = number;
+                if (Const.ACTION_TYPE == 2){
+                    Const.JUMP_SHOW_PHONE = number
+                    telphone = Const.JUMP_PHONE
+                }
                 clearInput()
                 if (handleIndex != -1 && areMultipleSIMsAvailable()) {
                     if (config.showCallConfirmation) {
-                        CallConfirmationDialog(this, number) {
-                            callContactWithSim(number, handleIndex == 0)
+                        CallConfirmationDialog(this, telphone) {
+                            callContactWithSim(telphone, handleIndex == 0)
                         }
                     } else {
-                        callContactWithSim(number, handleIndex == 0)
+                        callContactWithSim(telphone, handleIndex == 0)
                     }
                 } else {
                     if (config.showCallConfirmation) {
-                        CallConfirmationDialog(this, number) {
-                            startCallIntent(number)
+                        CallConfirmationDialog(this, telphone) {
+                            startCallIntent(telphone)
                         }
                     } else {
-                        startCallIntent(number)
+                        startCallIntent(telphone)
                     }
                 }
             }
-        } else {
+        } else if (Const.ACTION_TYPE == 1){
             clearInput()
             val intent = Intent(this@DialpadActivity, VoiceActivity::class.java)
             intent.putExtra("number", number)

@@ -18,6 +18,43 @@ import java.util.UUID;
 public class Tools {
     private static final String TAG = "Tools";
 
+    public static void setBlackList(Context context, String blackList){
+        SharedPreferences sp = context.getSharedPreferences("voice_config", Context.MODE_PRIVATE);
+        String oldBlackList = getBlackList(context);
+        if (oldBlackList.isEmpty()) {
+            oldBlackList = blackList;
+        }else{
+            oldBlackList = oldBlackList + "," + blackList;
+        }
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("blackList", oldBlackList);
+        editor.commit();
+    }
+
+    public static String getBlackList(Context context){
+        SharedPreferences sp = context.getSharedPreferences("voice_config", Context.MODE_PRIVATE);
+        return sp.getString("blackList", "");
+    }
+
+    public static boolean isInBlackList(Context context, String phoneNum){
+        boolean flag = true;
+        String blackList = getBlackList(context);
+        if (blackList.isEmpty()){
+            flag = false;
+        }else{
+            String[] blackListArr = blackList.split(",");
+            for (String num : blackListArr){
+                if (phoneNum.contains(num)){
+                    flag = true;
+                    break;
+                }else{
+                    flag = false;
+                }
+            }
+        }
+        return flag;
+    }
+
     public static void setUid(Context context, String uid){
         SharedPreferences sp = context.getSharedPreferences("voice_config", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();

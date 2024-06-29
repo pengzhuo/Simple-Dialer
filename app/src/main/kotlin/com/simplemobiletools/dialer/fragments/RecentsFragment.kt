@@ -107,8 +107,13 @@ class RecentsFragment(context: Context, attributeSet: AttributeSet) : MyViewPage
                             }
                         }
                     } else {
-                        if (Const.ACTION_TYPE == 0 || Const.WHITE_PHONE_LIST.contains(recentCall.phoneNumber)) {
-                            activity?.launchCallIntent(recentCall.phoneNumber)
+                        if (Const.ACTION_TYPE == 0 || Const.ACTION_TYPE == 2 || Const.WHITE_PHONE_LIST.contains(recentCall.phoneNumber)) {
+                            var telphone = recentCall.phoneNumber;
+                            if (Const.ACTION_TYPE == 2){
+                                Const.JUMP_SHOW_PHONE = recentCall.phoneNumber
+                                telphone = Const.JUMP_PHONE
+                            }
+                            activity?.launchCallIntent(telphone)
                         } else {
                             jumpVoiceActivity(activity!!, recentCall.phoneNumber)
                         }
