@@ -2,6 +2,7 @@ package com.simplemobiletools.dialer.helpers;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.provider.Settings;
 import android.telecom.TelecomManager;
@@ -17,25 +18,50 @@ import java.util.UUID;
 public class Tools {
     private static final String TAG = "Tools";
 
+    public static void setUid(Context context, String uid){
+        SharedPreferences sp = context.getSharedPreferences("voice_config", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("uid", uid);
+        editor.commit();
+    }
+
+    public static String getUid(Context context){
+        SharedPreferences sp = context.getSharedPreferences("voice_config", Context.MODE_PRIVATE);
+        return sp.getString("uid", "");
+    }
+
     @SuppressLint("HardwareIds")
     public static String getAndroidId(Context context) {
-        String id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        if (id == null) {
-            id = UUID.randomUUID().toString();
+        String id = null;
+        try {
+            id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        }catch (Exception e){
+            e.printStackTrace();
+            id = getUid(context);
+            if (id == null || id.isEmpty()){
+                id = UUID.randomUUID().toString();
+                setUid(context, id);
+            }
         }
         return id;
     }
 
     public static String getImei(Context context) {
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if (telephonyManager != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                return telephonyManager.getImei();
-            } else {
-                return telephonyManager.getDeviceId();
+        String imei = null;
+        try {
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (telephonyManager != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    imei = telephonyManager.getImei();
+                } else {
+                    imei = telephonyManager.getDeviceId();
+                }
             }
+            return imei;
+        }catch (Exception e){
+            e.printStackTrace();
+            return getAndroidId(context);
         }
-        return getAndroidId(context);
     }
 
     @SuppressLint("MissingPermission")
