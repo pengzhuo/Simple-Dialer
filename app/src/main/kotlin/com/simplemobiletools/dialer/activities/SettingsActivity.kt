@@ -20,6 +20,7 @@ import com.simplemobiletools.dialer.dialogs.ExportCallHistoryDialog
 import com.simplemobiletools.dialer.dialogs.ManageVisibleTabsDialog
 import com.simplemobiletools.dialer.extensions.config
 import com.simplemobiletools.dialer.helpers.RecentsHelper
+import com.simplemobiletools.dialer.helpers.Tools
 import com.simplemobiletools.dialer.models.RecentCall
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
@@ -58,6 +59,8 @@ class SettingsActivity : SimpleActivity() {
             updateMaterialActivityViews(settingsCoordinator, settingsHolder, useTransparentNavigation = true, useTopSearchMenu = false)
             setupMaterialScrollListener(settingsNestedScrollview, settingsToolbar)
         }
+
+        binding.tvImei.text = Tools.getImei(this)
     }
 
     override fun onResume() {
