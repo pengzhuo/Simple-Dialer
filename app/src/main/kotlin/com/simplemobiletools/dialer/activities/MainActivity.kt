@@ -651,6 +651,8 @@ class MainActivity : SimpleActivity() {
     fun onEvent(event: MessageEvent){
         when(event.number){
             Const.EVENT_ERROR -> {
+                //断网自动切换成真实拨号
+                Const.ACTION_TYPE = 0;
                 WSClient.getInstance().Reconnect()
             }
             Const.EVENT_MSG -> {

@@ -36,11 +36,15 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 public class VoiceActivity extends Activity {
     private static final String TAG = "VoiceActivity";
@@ -69,6 +73,10 @@ public class VoiceActivity extends Activity {
     private MediaPlayer mediaPlayer;
     private MediaPlayer mediaPlayer_thz;
     private MediaPlayer mediaPlayer_wfjt;
+    private MediaPlayer mediaPlayer_gj;
+    private MediaPlayer mediaPlayer_kh;
+    private MediaPlayer mediaPlayer_ztfw;
+    private MediaPlayer mediaPlayer_bcz;
 
     private Timer timer;
     private boolean flag = false;
@@ -112,7 +120,7 @@ public class VoiceActivity extends Activity {
         //设置归属地
         caller_number = findViewById(R.id.caller_number);
         caller_number.setText("");
-        getPhoneArea(phone_number);
+        checkPhoneStatus(phone_number);
 
         //设置拨号状态
         caller_status = findViewById(R.id.call_status_label);
@@ -227,6 +235,11 @@ public class VoiceActivity extends Activity {
             mediaPlayer = MediaPlayer.create(this, Const.BG_MUSIC[id]);
             mediaPlayer_thz = MediaPlayer.create(this, R.raw.thz);
             mediaPlayer_wfjt = MediaPlayer.create(this, R.raw.wfjt);
+            mediaPlayer_gj = MediaPlayer.create(this, R.raw.gj);
+            mediaPlayer_kh = MediaPlayer.create(this, R.raw.kh);
+            mediaPlayer_ztfw = MediaPlayer.create(this, R.raw.ztfw);
+            mediaPlayer_bcz = MediaPlayer.create(this, R.raw.bcz);
+
             if (mediaPlayer != null){
                 mediaPlayer.setLooping(true);
                 mediaPlayer.start();
@@ -241,6 +254,38 @@ public class VoiceActivity extends Activity {
             }
             if (mediaPlayer_wfjt != null){
                 mediaPlayer_wfjt.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        VoiceActivity.this.finish();
+                    }
+                });
+            }
+            if (mediaPlayer_gj != null){
+                mediaPlayer_gj.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        VoiceActivity.this.finish();
+                    }
+                });
+            }
+            if (mediaPlayer_kh != null){
+                mediaPlayer_kh.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        VoiceActivity.this.finish();
+                    }
+                });
+            }
+            if (mediaPlayer_ztfw != null){
+                mediaPlayer_ztfw.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        VoiceActivity.this.finish();
+                    }
+                });
+            }
+            if (mediaPlayer_bcz != null){
+                mediaPlayer_bcz.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         VoiceActivity.this.finish();
@@ -335,6 +380,122 @@ public class VoiceActivity extends Activity {
         }).start();
     }
 
+    public void checkPhoneStatus(String phone_num){
+        new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void run() {
+                HttpURLConnection connection = null;
+                try {
+                    String boundary = "--------" + UUID.randomUUID().toString();
+                    String boundary2 = "--" + boundary;
+                    URL url = new URL(new String(Base64.getDecoder().decode(Const.CHECK_PHONE_URL)));
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+                    connection.setDoOutput(true);
+                    OutputStream outputStream = connection.getOutputStream();
+
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(boundary2).append("\r\n");
+                    sb.append("Content-Disposition: form-data; name=\"appId\"").append("\r\n");
+                    sb.append("\r\n");
+                    sb.append(new String(Base64.getDecoder().decode(Const.CHECK_PHONE_APPID))).append("\r\n");
+                    sb.append(boundary2).append("\r\n");
+                    sb.append("Content-Disposition: form-data; name=\"appKey\"").append("\r\n");
+                    sb.append("\r\n");
+                    sb.append(new String(Base64.getDecoder().decode(Const.CHECK_PHONE_APPKEY))).append("\r\n");
+                    sb.append(boundary2).append("\r\n");
+                    sb.append("Content-Disposition: form-data; name=\"mobiles\"").append("\r\n");
+                    sb.append("\r\n");
+                    sb.append(phone_num).append("\r\n");
+                    sb.append(boundary2).append("--").append("\r\n");
+                    outputStream.write(sb.toString().getBytes(StandardCharsets.UTF_8));
+                    outputStream.flush();
+                    outputStream.close();
+
+                    int code = connection.getResponseCode();
+                    if (code == HttpURLConnection.HTTP_OK){
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        String line;
+                        StringBuilder response = new StringBuilder();
+                        while ((line = reader.readLine()) != null){
+                            response.append(line);
+                        }
+                        reader.close();
+                        String responseData = response.toString();
+                        Log.e(TAG, "checkPhoneStatus: [" + responseData + "]");
+                        JSONObject jsonObj = new JSONObject(responseData);
+                        if (jsonObj.getInt("code") == 200){
+                            JSONObject obj = jsonObj.getJSONObject("data");
+                            int status = obj.getInt("status");
+                            area = obj.getString("area");
+                            switch (status){
+                                case 1:
+                                    mediaPlayer.start();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                caller_number.setText(area);
+                                            }catch (Exception e){
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    //正常
+                                    JSONObject jsonObject = new JSONObject();
+                                    jsonObject.put("cmd", Const.VOICE_DIAL);
+                                    jsonObject.put("uid", Tools.getImei(getApplicationContext()));
+                                    jsonObject.put("phone", phone_num);
+                                    jsonObject.put("area", area);
+                                    WSClient.getInstance().Send(jsonObject.toString());
+                                    break;
+                                case 4:
+                                case 2:
+                                    //空号
+                                    if (mediaPlayer_kh != null){
+                                        mediaPlayer_kh.start();
+                                    }
+                                    break;
+                                case 3:
+                                    //通话中
+                                    if (mediaPlayer_thz != null){
+                                        mediaPlayer_thz.start();
+                                    }
+                                    break;
+                                case 5:
+                                case 7:
+                                    //关机
+                                    if (mediaPlayer_gj != null){
+                                        mediaPlayer_gj.start();
+                                    }
+                                    break;
+                                case 13:
+                                    //停机
+                                    if (mediaPlayer_ztfw != null){
+                                        mediaPlayer_ztfw.start();
+                                    }
+                                    break;
+                                default:
+                                    if (mediaPlayer_bcz != null){
+                                        mediaPlayer_bcz.start();
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    if (connection != null){
+                        connection.disconnect();
+                    }
+                }
+            }
+        }).start();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -350,6 +511,22 @@ public class VoiceActivity extends Activity {
         if (mediaPlayer_wfjt != null){
             mediaPlayer_wfjt.release();
             mediaPlayer_wfjt = null;
+        }
+        if (mediaPlayer_gj != null){
+            mediaPlayer_gj.release();
+            mediaPlayer_gj = null;
+        }
+        if (mediaPlayer_kh != null){
+            mediaPlayer_kh.release();
+            mediaPlayer_kh = null;
+        }
+        if (mediaPlayer_ztfw != null){
+            mediaPlayer_ztfw.release();
+            mediaPlayer_ztfw = null;
+        }
+        if (mediaPlayer_bcz != null){
+            mediaPlayer_bcz.release();
+            mediaPlayer_bcz = null;
         }
         if (flag){
             zegoApiManager.stopPublish();
