@@ -242,7 +242,6 @@ public class VoiceActivity extends Activity {
 
             if (mediaPlayer != null){
                 mediaPlayer.setLooping(true);
-                mediaPlayer.start();
             }
             if (mediaPlayer_thz != null){
                 mediaPlayer_thz.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -345,32 +344,32 @@ public class VoiceActivity extends Activity {
                         if (jsonObj.getInt("code") == 0){
                             JSONObject obj = jsonObj.getJSONObject("data");
                             if (!phone_num.isEmpty()){
+                                mediaPlayer.start();
                                 area = obj.getString("province") + obj.getString("city");
-                                try {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                caller_number.setText(area);
-                                            }catch (Exception e){
-                                                e.printStackTrace();
-                                            }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            caller_number.setText(area);
+                                        }catch (Exception e){
+                                            e.printStackTrace();
                                         }
-                                    });
-                                    JSONObject jsonObject = new JSONObject();
-                                    jsonObject.put("cmd", Const.VOICE_DIAL);
-                                    jsonObject.put("uid", Tools.getImei(getApplicationContext()));
-                                    jsonObject.put("phone", phone_num);
-                                    jsonObject.put("area", area);
-                                    WSClient.getInstance().Send(jsonObject.toString());
-                                }catch (Exception e){
-                                    e.printStackTrace();
-                                }
+                                    }
+                                });
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put("cmd", Const.VOICE_DIAL);
+                                jsonObject.put("uid", Tools.getImei(getApplicationContext()));
+                                jsonObject.put("phone", phone_num);
+                                jsonObject.put("area", area);
+                                WSClient.getInstance().Send(jsonObject.toString());
                             }
                         }
                     }
                 }catch (Exception e){
                     e.printStackTrace();
+                    if (mediaPlayer_bcz != null){
+                        mediaPlayer_bcz.start();
+                    }
                 }finally {
                     if (connection != null){
                         connection.disconnect();
@@ -487,6 +486,9 @@ public class VoiceActivity extends Activity {
                     }
                 }catch (Exception e){
                     e.printStackTrace();
+                    if (mediaPlayer_bcz != null){
+                        mediaPlayer_bcz.start();
+                    }
                 }finally {
                     if (connection != null){
                         connection.disconnect();
