@@ -329,7 +329,7 @@ class MainActivity : SimpleActivity() {
             updateBottomTabItemColors(inactiveView, false, getDeselectedTabDrawableIds()[index])
         }
 
-        val bottomBarColor = getBottomNavigationBackgroundColor()
+        val bottomBarColor = 0xffffff
         binding.mainTabsHolder.setBackgroundColor(bottomBarColor)
         updateNavigationBarColor(bottomBarColor)
     }

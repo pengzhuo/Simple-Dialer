@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools">
 
     <RelativeLayout
         android:id="@+id/fragment_wrapper"
@@ -19,8 +20,10 @@
             android:paddingEnd="@dimen/activity_margin"
             android:text="@string/no_contacts_found"
             android:textSize="@dimen/bigger_text_size"
+            android:textColor="@color/md_grey_black_dark"
             android:textStyle="italic"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tool:visibility="visible" />
 
         <com.simplemobiletools.commons.views.MyTextView
             android:id="@+id/fragment_placeholder_2"
@@ -33,7 +36,9 @@
             android:padding="@dimen/activity_margin"
             android:text="@string/create_new_contact"
             android:textSize="@dimen/bigger_text_size"
-            android:visibility="gone" />
+            android:textColor="@color/md_grey_black_dark"
+            android:visibility="gone"
+            tool:visibility="visible" />
 
         <com.simplemobiletools.commons.views.MyRecyclerView
             android:id="@+id/fragment_list"

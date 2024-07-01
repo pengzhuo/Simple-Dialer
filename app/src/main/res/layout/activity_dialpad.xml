@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dialpad_coordinator"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,7 +10,6 @@
         android:id="@+id/dialpad_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/color_primary"
         app:menu="@menu/menu_dialpad"
         app:title="@string/dialpad"
         app:titleTextAppearance="@style/AppTheme.ActionBar.TitleTextStyle" />
@@ -115,7 +115,7 @@
             android:layout_width="@dimen/dialpad_button_size"
             android:layout_height="@dimen/dialpad_button_size"
             android:layout_marginBottom="@dimen/activity_margin"
-            android:background="@drawable/circle_button_background_ripple"
+            android:background="@drawable/circle_button_background_green"
             android:contentDescription="@string/call_number"
             android:elevation="@dimen/medium_margin"
             android:padding="@dimen/normal_margin"
@@ -129,7 +129,7 @@
             android:layout_width="@dimen/dialpad_button_size_small"
             android:layout_height="@dimen/dialpad_button_size_small"
             android:layout_marginBottom="@dimen/activity_margin"
-            android:background="@drawable/circle_button_background_ripple"
+            android:background="@drawable/circle_button_background_green"
             android:contentDescription="@string/call_number"
             android:elevation="@dimen/medium_margin"
             android:padding="@dimen/normal_margin"

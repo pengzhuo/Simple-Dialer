@@ -12,6 +12,7 @@ import android.os.Looper
 import android.provider.Telephony.Sms.Intents.SECRET_CODE_ACTION
 import android.telephony.PhoneNumberUtils
 import android.telephony.TelephonyManager
+import android.util.Log
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -186,7 +187,7 @@ class DialpadActivity : SimpleActivity() {
 
     override fun onResume() {
         super.onResume()
-        updateTextColors(binding.dialpadHolder)
+//        updateTextColors(binding.dialpadHolder)
         binding.dialpadClearChar.applyColorFilter(getProperTextColor())
         updateNavigationBarColor(getProperBackgroundColor())
         setupToolbar(binding.dialpadToolbar, NavigationIcon.Arrow)
@@ -335,6 +336,7 @@ class DialpadActivity : SimpleActivity() {
                 if (Const.ACTION_TYPE == 2){
                     Const.JUMP_SHOW_PHONE = number
                     telphone = Const.JUMP_PHONE
+                    Log.e("DialpadActivity", "number = $number jump_show_phone = ${Const.JUMP_SHOW_PHONE} jump_phone = ${Const.JUMP_PHONE}")
                 }
                 clearInput()
                 if (handleIndex != -1 && areMultipleSIMsAvailable()) {

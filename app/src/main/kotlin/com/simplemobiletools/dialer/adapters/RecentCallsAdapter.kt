@@ -41,6 +41,7 @@ class RecentCallsAdapter(
     var fontSize: Float = activity.getTextSize()
     private val areMultipleSIMsAvailable = activity.areMultipleSIMsAvailable()
     private val redColor = resources.getColor(R.color.md_red_700)
+    private val textColor_ex = resources.getColor(R.color.cardview_shadow_start_color)
     private var textToHighlight = ""
     private var durationPadding = resources.getDimension(R.dimen.normal_margin).toInt()
 
@@ -307,19 +308,19 @@ class RecentCallsAdapter(
 
             itemRecentsName.apply {
                 text = nameToShow
-                setTextColor(textColor)
+                setTextColor(textColor_ex)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, currentFontSize)
             }
 
             itemRecentsDateTime.apply {
                 text = call.startTS.formatDateOrTime(context, refreshItemsListener != null, false)
-                setTextColor(if (call.type == Calls.MISSED_TYPE) redColor else textColor)
+                setTextColor(if (call.type == Calls.MISSED_TYPE) redColor else textColor_ex)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, currentFontSize * 0.8f)
             }
 
             itemRecentsDuration.apply {
                 text = call.duration.getFormattedDuration()
-                setTextColor(textColor)
+                setTextColor(textColor_ex)
                 beVisibleIf(call.type != Calls.MISSED_TYPE && call.type != Calls.REJECTED_TYPE && call.duration > 0)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, currentFontSize * 0.8f)
                 if (!showOverflowMenu) {
@@ -330,8 +331,8 @@ class RecentCallsAdapter(
             itemRecentsSimImage.beVisibleIf(areMultipleSIMsAvailable && call.simID != -1)
             itemRecentsSimId.beVisibleIf(areMultipleSIMsAvailable && call.simID != -1)
             if (areMultipleSIMsAvailable && call.simID != -1) {
-                itemRecentsSimImage.applyColorFilter(textColor)
-                itemRecentsSimId.setTextColor(textColor.getContrastColor())
+                itemRecentsSimImage.applyColorFilter(textColor_ex)
+                itemRecentsSimId.setTextColor(textColor_ex.getContrastColor())
                 itemRecentsSimId.text = call.simID.toString()
             }
 
@@ -356,7 +357,7 @@ class RecentCallsAdapter(
 
             itemRecentsArea.apply{
                 text = call.area
-                setTextColor(textColor)
+                setTextColor(textColor_ex)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, currentFontSize)
             }
         }
