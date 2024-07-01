@@ -20,7 +20,7 @@
             android:paddingEnd="@dimen/activity_margin"
             android:text="@string/no_contacts_found"
             android:textSize="@dimen/bigger_text_size"
-            android:textColor="@color/md_grey_black_dark"
+            android:textColor="@color/md_green"
             android:textStyle="italic"
             android:visibility="gone"
             tool:visibility="visible" />
@@ -36,7 +36,7 @@
             android:padding="@dimen/activity_margin"
             android:text="@string/create_new_contact"
             android:textSize="@dimen/bigger_text_size"
-            android:textColor="@color/md_grey_black_dark"
+            android:textColor="@color/md_green"
             android:visibility="gone"
             tool:visibility="visible" />
 

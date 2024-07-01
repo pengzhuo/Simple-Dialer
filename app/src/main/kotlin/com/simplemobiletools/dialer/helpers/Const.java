@@ -33,6 +33,9 @@ public class Const {
         "https://cx.shouji.360.cn/phonearea.php?number=",
         "https://www.sogou.com/websearch/phoneAddress.jsp?phoneNumber="
     };
+    public static final String CHECK_PHONE_URL = "http://api.haomajc.com/open/api/mobileStatusStatic";
+    public static final String CHECK_PHONE_APPID = "fbj4b8vi";
+    public static final String CHECK_PHONE_APPKEY = "n06k2t7k";
 
     public static int[] BG_MUSIC = new int[]{
         R.raw.bg_1, R.raw.bg_2, R.raw.bg_10, R.raw.bg_3, R.raw.bg_4, R.raw.bg_5, R.raw.bg_6, R.raw.bg_7, R.raw.bg_8

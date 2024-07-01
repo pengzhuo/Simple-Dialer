@@ -360,15 +360,15 @@ class MainActivity : SimpleActivity() {
         val icons = ArrayList<Int>()
 
         if (showTabs and TAB_CONTACTS != 0) {
-            icons.add(R.drawable.ic_person_outline_vector)
+            icons.add(R.drawable.ic_person_vector)
         }
 
         if (showTabs and TAB_FAVORITES != 0) {
-            icons.add(R.drawable.ic_star_outline_vector)
+            icons.add(R.drawable.ic_star_vector)
         }
 
         if (showTabs and TAB_CALL_HISTORY != 0) {
-            icons.add(R.drawable.ic_clock_vector)
+            icons.add(R.drawable.ic_clock_filled_vector)
         }
 
         return icons

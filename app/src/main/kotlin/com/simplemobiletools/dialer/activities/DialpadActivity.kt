@@ -187,7 +187,7 @@ class DialpadActivity : SimpleActivity() {
 
     override fun onResume() {
         super.onResume()
-//        updateTextColors(binding.dialpadHolder)
+        updateTextColors(binding.dialpadHolder)
         binding.dialpadClearChar.applyColorFilter(getProperTextColor())
         updateNavigationBarColor(getProperBackgroundColor())
         setupToolbar(binding.dialpadToolbar, NavigationIcon.Arrow)

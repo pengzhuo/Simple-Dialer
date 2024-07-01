@@ -41,7 +41,7 @@ class RecentCallsAdapter(
     var fontSize: Float = activity.getTextSize()
     private val areMultipleSIMsAvailable = activity.areMultipleSIMsAvailable()
     private val redColor = resources.getColor(R.color.md_red_700)
-    private val textColor_ex = resources.getColor(R.color.cardview_shadow_start_color)
+    private val textColor_ex = resources.getColor(R.color.cardview_dark_background)
     private var textToHighlight = ""
     private var durationPadding = resources.getDimension(R.dimen.normal_margin).toInt()
 

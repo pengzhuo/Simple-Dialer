@@ -59,11 +59,12 @@ class ContactsFragment(context: Context, attributeSet: AttributeSet) : MyViewPag
 
     override fun setupColors(textColor: Int, primaryColor: Int, properPrimaryColor: Int) {
         binding.apply {
-            (fragmentList?.adapter as? MyRecyclerViewAdapter)?.updateTextColor(textColor)
-            fragmentPlaceholder.setTextColor(textColor)
-            fragmentPlaceholder2.setTextColor(properPrimaryColor)
+            val textColor_ex = 0xffffff
+            (fragmentList?.adapter as? MyRecyclerViewAdapter)?.updateTextColor(textColor_ex)
+            fragmentPlaceholder.setTextColor(textColor_ex)
+            fragmentPlaceholder2.setTextColor(textColor_ex)
 
-            letterFastscroller.textColor = textColor.getColorStateList()
+            letterFastscroller.textColor = textColor_ex.getColorStateList()
             letterFastscroller.pressedTextColor = properPrimaryColor
             letterFastscrollerThumb.setupWithFastScroller(letterFastscroller)
             letterFastscrollerThumb.textColor = properPrimaryColor.getContrastColor()
