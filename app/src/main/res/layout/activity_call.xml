@@ -244,6 +244,20 @@
             tools:visibility="visible" />
 
         <ImageView
+            android:id="@+id/call_manage_ex"
+            android:layout_width="@dimen/dialpad_button_size"
+            android:layout_height="@dimen/dialpad_button_size"
+            android:layout_marginTop="@dimen/big_margin"
+            android:background="@drawable/circle_button_background_ripple"
+            android:contentDescription="@string/conference_manage"
+            android:padding="@dimen/activity_margin"
+            android:src="@drawable/ic_people_vector"
+            app:layout_constraintEnd_toEndOf="@+id/call_dialpad"
+            app:layout_constraintStart_toStartOf="@+id/call_dialpad"
+            app:layout_constraintTop_toBottomOf="@+id/call_dialpad"
+            tools:visibility="visible" />
+
+        <ImageView
             android:id="@+id/call_swap"
             android:layout_width="@dimen/dialpad_button_size"
             android:layout_height="@dimen/dialpad_button_size"
