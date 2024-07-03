@@ -743,25 +743,22 @@ class CallActivity : SimpleActivity() {
         if (callDuration > 0) {
             runOnUiThread {
                 binding.callStatusLabel.text = "${callDuration.getFormattedDuration()} (${getString(R.string.call_ended)})"
-                Handler().postDelayed({
+                Handler(Looper.getMainLooper()).postDelayed({
                     finishAndRemoveTask()
                 }, 3000)
             }
         } else {
             binding.callStatusLabel.text = getString(R.string.call_ended)
-            GlobalScope.launch(Dispatchers.Main) {
-                repeat(1){
-                    try {
-                        if (mediaplayer != null){
-                            mediaplayer?.start()
-                        }
-                        delay(3)
-                    }catch (e: java.lang.Exception){
-                        e.printStackTrace()
-                    }finally {
-                        finish()
-                    }
+            try {
+                if (mediaplayer != null){
+                    mediaplayer?.start()
                 }
+            }catch (e: java.lang.Exception){
+                e.printStackTrace()
+            }finally {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    finish()
+                }, 3000)
             }
         }
     }
@@ -867,12 +864,12 @@ class CallActivity : SimpleActivity() {
                     val cmd = obj.getString("cmd")
                     when(cmd){
                         Const.VOICE_HANGUP_EX -> {
-                            endCall()
                             try {
                                 mediaplayer = MediaPlayer.create(this@CallActivity, R.raw.thz)
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
                             }
+                            endCall()
                         }
                     }
                 }
