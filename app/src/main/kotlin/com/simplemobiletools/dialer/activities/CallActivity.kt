@@ -8,9 +8,11 @@ import android.graphics.Bitmap
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.RippleDrawable
 import android.media.AudioManager
+import android.media.MediaPlayer
 import android.os.*
 import android.telecom.Call
 import android.telecom.CallAudioState
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -34,6 +36,10 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlin.math.max
 import kotlin.math.min
 
@@ -96,18 +102,6 @@ class CallActivity : SimpleActivity() {
         if (config.isUsingSystemTheme) {
             updateStatusbarColor(getProperBackgroundColor())
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        CallManager.removeListener(callCallback)
-        disableProximitySensor()
-
-        if (screenOnWakeLock?.isHeld == true) {
-            screenOnWakeLock!!.release()
-        }
-
-        EventBus.getDefault().unregister(this)
     }
 
     override fun onBackPressed() {
@@ -855,11 +849,74 @@ class CallActivity : SimpleActivity() {
                     val cmd = obj.getString("cmd")
                     when(cmd){
                         Const.VOICE_HANGUP_EX -> {
-                            endCall()
+                            var mediaplayer = MediaPlayer.create(this@CallActivity, R.raw.thz)
+                            mediaplayer.setOnCompletionListener { object :MediaPlayer.OnCompletionListener{
+                                override fun onCompletion(mp: MediaPlayer?) {
+                                    endCall()
+                                    if (mediaplayer != null){
+                                        mediaplayer.release()
+                                        mediaplayer = null
+                                    }
+                                }
+                            } }
+                            mediaplayer.start()
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun getPhoneArea(phone_num: String) {
+        Thread {
+            var connection: HttpURLConnection? = null
+            try {
+                val url = URL(Const.PHONE_AREA[0] + phone_num)
+                connection = url.openConnection() as HttpURLConnection
+                connection!!.requestMethod = "GET"
+                val code = connection!!.responseCode
+                if (code == HttpURLConnection.HTTP_OK) {
+                    val reader = BufferedReader(InputStreamReader(connection!!.inputStream))
+                    var line: String?
+                    val response = StringBuilder()
+                    while ((reader.readLine().also { line = it }) != null) {
+                        response.append(line)
+                    }
+                    reader.close()
+                    val responseData = response.toString()
+                    Log.e("CallActivity", " phone_area: $responseData")
+                    val jsonObj = JSONObject(responseData)
+                    if (jsonObj.getInt("code") == 0) {
+                        val obj = jsonObj.getJSONObject("data")
+                        if (!phone_num.isEmpty()) {
+                            val area: String = obj.getString("province") + obj.getString("city")
+                            runOnUiThread {
+                                try {
+                                    //TODO
+                                } catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            } finally {
+                connection?.disconnect()
+            }
+        }.start()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        CallManager.removeListener(callCallback)
+        disableProximitySensor()
+
+        if (screenOnWakeLock?.isHeld == true) {
+            screenOnWakeLock!!.release()
+        }
+
+        EventBus.getDefault().unregister(this)
     }
 }
