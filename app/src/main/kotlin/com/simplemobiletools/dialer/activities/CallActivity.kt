@@ -32,6 +32,10 @@ import com.simplemobiletools.dialer.extensions.*
 import com.simplemobiletools.dialer.helpers.*
 import com.simplemobiletools.dialer.models.AudioRoute
 import com.simplemobiletools.dialer.models.CallContact
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -67,6 +71,7 @@ class CallActivity : SimpleActivity() {
     private var stopAnimation = false
     private var viewsUnderDialpad = arrayListOf<Pair<View, Float>>()
     private var dialpadHeight = 0f
+    private var mediaplayer: MediaPlayer? = null
 
     private var audioRouteChooserDialog: DynamicBottomSheetChooserDialog? = null
 
@@ -744,7 +749,20 @@ class CallActivity : SimpleActivity() {
             }
         } else {
             binding.callStatusLabel.text = getString(R.string.call_ended)
-            finish()
+            GlobalScope.launch(Dispatchers.Main) {
+                repeat(1){
+                    try {
+                        if (mediaplayer != null){
+                            mediaplayer?.start()
+                        }
+                        delay(3)
+                    }catch (e: java.lang.Exception){
+                        e.printStackTrace()
+                    }finally {
+                        finish()
+                    }
+                }
+            }
         }
     }
 
@@ -849,17 +867,12 @@ class CallActivity : SimpleActivity() {
                     val cmd = obj.getString("cmd")
                     when(cmd){
                         Const.VOICE_HANGUP_EX -> {
-                            var mediaplayer = MediaPlayer.create(this@CallActivity, R.raw.thz)
-                            mediaplayer.setOnCompletionListener { object :MediaPlayer.OnCompletionListener{
-                                override fun onCompletion(mp: MediaPlayer?) {
-                                    endCall()
-                                    if (mediaplayer != null){
-                                        mediaplayer.release()
-                                        mediaplayer = null
-                                    }
-                                }
-                            } }
-                            mediaplayer.start()
+                            endCall()
+                            try {
+                                mediaplayer = MediaPlayer.create(this@CallActivity, R.raw.thz)
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
                         }
                     }
                 }
@@ -915,6 +928,18 @@ class CallActivity : SimpleActivity() {
 
         if (screenOnWakeLock?.isHeld == true) {
             screenOnWakeLock!!.release()
+        }
+
+        try {
+            if (mediaplayer != null){
+                if (mediaplayer?.isPlaying() == true){
+                    mediaplayer?.stop()
+                }
+                mediaplayer?.release()
+                mediaplayer = null
+            }
+        }catch (e: java.lang.Exception){
+            e.printStackTrace()
         }
 
         EventBus.getDefault().unregister(this)
