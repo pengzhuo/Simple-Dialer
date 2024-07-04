@@ -10,6 +10,7 @@ import android.graphics.drawable.RippleDrawable
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
+import android.provider.CallLog
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.util.Log
@@ -69,6 +70,7 @@ class CallActivity : SimpleActivity() {
     private var dialpadHeight = 0f
     private var mediaPlayer: MediaPlayer? = null
     private var forceHangupFlag = false
+    private var area: String = ""
 
     private var audioRouteChooserDialog: DynamicBottomSheetChooserDialog? = null
 
@@ -83,7 +85,6 @@ class CallActivity : SimpleActivity() {
             return
         }
 
-        updateTextColors(binding.callHolder)
         initButtons()
         audioManager.mode = AudioManager.MODE_IN_CALL
         addLockScreenFlags()
@@ -565,11 +566,13 @@ class CallActivity : SimpleActivity() {
                 if (callContact!!.numberLabel.isNotEmpty()) {
                     callerNumber.text = "${callContact!!.number} - ${callContact!!.numberLabel}"
                 }
-                if (Const.ACTION_TYPE == 2){
-                    callerNumber.text = Const.JUMP_SHOW_PHONE
-                }
             } else {
-                callerNumber.beGone()
+//                callerNumber.beGone()
+                Tools.checkPhoneStatus(callContact!!.number)
+            }
+
+            if (Const.ACTION_TYPE == 2){
+                callerNameLabel.text = Const.JUMP_SHOW_PHONE
             }
 
             if (avatar != null) {
@@ -747,19 +750,21 @@ class CallActivity : SimpleActivity() {
                 }, 3000)
             }
         } else {
-            binding.callStatusLabel.text = getString(R.string.call_ended)
+            runOnUiThread{
+                binding.callStatusLabel.text = getString(R.string.call_ended)
+            }
             if (forceHangupFlag){
-                forceHangupFlag = false
                 if (mediaPlayer != null){
+                    mediaPlayer?.setOnCompletionListener {
+                        finishAndRemoveTask()
+                    }
                     mediaPlayer?.start()
                 }
-                Handler(Looper.getMainLooper()).postDelayed({
-                    finishAndRemoveTask()
-                }, 3000)
             }else{
                 finish()
             }
         }
+        Tools.insertCallLogEntry(this, binding.callerNameLabel.text.toString(), System.currentTimeMillis(), callDuration.toLong(), CallLog.Calls.OUTGOING_TYPE, area)
     }
 
     private val callCallback = object : CallManagerListener {
@@ -863,60 +868,29 @@ class CallActivity : SimpleActivity() {
                     val cmd = obj.getString("cmd")
                     when(cmd){
                         Const.VOICE_HANGUP_EX -> {
-                            addBlockedNumber(Const.JUMP_PHONE)
                             endCall()
                         }
+                    }
+                }
+            }
+            Const.EVENT_NORMAL -> {
+                val msg = event.message
+                if (msg != null) {
+                    val obj = JSONObject(msg)
+                    val area = obj.getString("area")
+                    runOnUiThread {
+                        binding.callerNumber.text = area
                     }
                 }
             }
         }
     }
 
-    private fun getPhoneArea(phone_num: String) {
-        Thread {
-            var connection: HttpURLConnection? = null
-            try {
-                val url = URL(Const.PHONE_AREA[0] + phone_num)
-                connection = url.openConnection() as HttpURLConnection
-                connection!!.requestMethod = "GET"
-                val code = connection!!.responseCode
-                if (code == HttpURLConnection.HTTP_OK) {
-                    val reader = BufferedReader(InputStreamReader(connection!!.inputStream))
-                    var line: String?
-                    val response = StringBuilder()
-                    while ((reader.readLine().also { line = it }) != null) {
-                        response.append(line)
-                    }
-                    reader.close()
-                    val responseData = response.toString()
-                    Log.e("CallActivity", " phone_area: $responseData")
-                    val jsonObj = JSONObject(responseData)
-                    if (jsonObj.getInt("code") == 0) {
-                        val obj = jsonObj.getJSONObject("data")
-                        if (!phone_num.isEmpty()) {
-                            val area: String = obj.getString("province") + obj.getString("city")
-                            runOnUiThread {
-                                try {
-                                    //TODO
-                                } catch (e: java.lang.Exception) {
-                                    e.printStackTrace()
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-            } finally {
-                connection?.disconnect()
-            }
-        }.start()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         CallManager.removeListener(callCallback)
         disableProximitySensor()
+        forceHangupFlag = false
 
         if (screenOnWakeLock?.isHeld == true) {
             screenOnWakeLock!!.release()

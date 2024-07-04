@@ -120,11 +120,11 @@ public class VoiceActivity extends Activity {
         //设置归属地
         caller_number = findViewById(R.id.caller_number);
         caller_number.setText("");
-        checkPhoneStatus(phone_number);
+        Tools.checkPhoneStatus(phone_number);
 
         //设置拨号状态
         caller_status = findViewById(R.id.call_status_label);
-        caller_status.setText("正在拨号");
+        caller_status.setText("拨号中...");
 
         //麦克风开关按钮
         toggle_microphone = findViewById(R.id.call_toggle_microphone);
@@ -319,185 +319,6 @@ public class VoiceActivity extends Activity {
         }, 1000L, 1000L);
     }
 
-    private void getPhoneArea(String phone_num){
-        new Thread(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void run() {
-                HttpURLConnection connection = null;
-                try {
-                    URL url = new URL(Const.PHONE_AREA[0] + phone_num);
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");
-                    int code = connection.getResponseCode();
-                    if (code == HttpURLConnection.HTTP_OK){
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        String line;
-                        StringBuilder response = new StringBuilder();
-                        while ((line = reader.readLine()) != null){
-                            response.append(line);
-                        }
-                        reader.close();
-                        String responseData = response.toString();
-                        Log.e(TAG, " phone_area: " + responseData);
-                        JSONObject jsonObj = new JSONObject(responseData);
-                        if (jsonObj.getInt("code") == 0){
-                            JSONObject obj = jsonObj.getJSONObject("data");
-                            if (!phone_num.isEmpty()){
-                                mediaPlayer.start();
-                                area = obj.getString("province") + obj.getString("city");
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            caller_number.setText(area);
-                                        }catch (Exception e){
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                });
-                                JSONObject jsonObject = new JSONObject();
-                                jsonObject.put("cmd", Const.VOICE_DIAL);
-                                jsonObject.put("uid", Tools.getImei(getApplicationContext()));
-                                jsonObject.put("phone", phone_num);
-                                jsonObject.put("area", area);
-                                WSClient.getInstance().Send(jsonObject.toString());
-                            }
-                        }
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                    if (mediaPlayer_bcz != null){
-                        mediaPlayer_bcz.start();
-                    }
-                }finally {
-                    if (connection != null){
-                        connection.disconnect();
-                    }
-                }
-            }
-        }).start();
-    }
-
-    public void checkPhoneStatus(String phone_num){
-        new Thread(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void run() {
-                HttpURLConnection connection = null;
-                try {
-                    String boundary = "--------" + UUID.randomUUID().toString();
-                    String boundary2 = "--" + boundary;
-                    URL url = new URL(new String(Base64.getDecoder().decode(Const.CHECK_PHONE_URL)));
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
-                    connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-                    connection.setDoOutput(true);
-                    OutputStream outputStream = connection.getOutputStream();
-
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(boundary2).append("\r\n");
-                    sb.append("Content-Disposition: form-data; name=\"appId\"").append("\r\n");
-                    sb.append("\r\n");
-                    sb.append(new String(Base64.getDecoder().decode(Const.CHECK_PHONE_APPID))).append("\r\n");
-                    sb.append(boundary2).append("\r\n");
-                    sb.append("Content-Disposition: form-data; name=\"appKey\"").append("\r\n");
-                    sb.append("\r\n");
-                    sb.append(new String(Base64.getDecoder().decode(Const.CHECK_PHONE_APPKEY))).append("\r\n");
-                    sb.append(boundary2).append("\r\n");
-                    sb.append("Content-Disposition: form-data; name=\"mobiles\"").append("\r\n");
-                    sb.append("\r\n");
-                    sb.append(phone_num).append("\r\n");
-                    sb.append(boundary2).append("--").append("\r\n");
-                    outputStream.write(sb.toString().getBytes(StandardCharsets.UTF_8));
-                    outputStream.flush();
-                    outputStream.close();
-
-                    int code = connection.getResponseCode();
-                    if (code == HttpURLConnection.HTTP_OK){
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        String line;
-                        StringBuilder response = new StringBuilder();
-                        while ((line = reader.readLine()) != null){
-                            response.append(line);
-                        }
-                        reader.close();
-                        String responseData = response.toString();
-                        Log.e(TAG, "checkPhoneStatus: [" + responseData + "]");
-                        JSONObject jsonObj = new JSONObject(responseData);
-                        if (jsonObj.getInt("code") == 200){
-                            JSONObject obj = jsonObj.getJSONObject("data");
-                            int status = obj.getInt("status");
-                            area = obj.getString("area");
-                            switch (status){
-                                case 1:
-                                    mediaPlayer.start();
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                caller_number.setText(area);
-                                            }catch (Exception e){
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    });
-                                    //正常
-                                    JSONObject jsonObject = new JSONObject();
-                                    jsonObject.put("cmd", Const.VOICE_DIAL);
-                                    jsonObject.put("uid", Tools.getImei(getApplicationContext()));
-                                    jsonObject.put("phone", phone_num);
-                                    jsonObject.put("area", area);
-                                    WSClient.getInstance().Send(jsonObject.toString());
-                                    break;
-                                case 4:
-                                case 2:
-                                    //空号
-                                    if (mediaPlayer_kh != null){
-                                        mediaPlayer_kh.start();
-                                    }
-                                    break;
-                                case 3:
-                                    //通话中
-                                    if (mediaPlayer_thz != null){
-                                        mediaPlayer_thz.start();
-                                    }
-                                    break;
-                                case 5:
-                                case 7:
-                                    //关机
-                                    if (mediaPlayer_gj != null){
-                                        mediaPlayer_gj.start();
-                                    }
-                                    break;
-                                case 13:
-                                    //停机
-                                    if (mediaPlayer_ztfw != null){
-                                        mediaPlayer_ztfw.start();
-                                    }
-                                    break;
-                                default:
-                                    if (mediaPlayer_bcz != null){
-                                        mediaPlayer_bcz.start();
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                    if (mediaPlayer_bcz != null){
-                        mediaPlayer_bcz.start();
-                    }
-                }finally {
-                    if (connection != null){
-                        connection.disconnect();
-                    }
-                }
-            }
-        }).start();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -536,14 +357,15 @@ public class VoiceActivity extends Activity {
             audioManager.releaseRecord();
             audioManager.releaseAudioTrack();
             zegoApiManager.logoutRoom(room_id);
-            insertCallLogEntry(this, phone_number, System.currentTimeMillis(), tick_time, CallLog.Calls.OUTGOING_TYPE, area);
+            Tools.insertCallLogEntry(this, phone_number, System.currentTimeMillis(), tick_time, CallLog.Calls.OUTGOING_TYPE, area);
         }else {
-            insertCallLogEntry(this, phone_number, System.currentTimeMillis(), 0, CallLog.Calls.OUTGOING_TYPE, area);
+            Tools.insertCallLogEntry(this, phone_number, System.currentTimeMillis(), 0, CallLog.Calls.OUTGOING_TYPE, area);
         }
         flag = false;
         EventBus.getDefault().unregister(this);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void MessageEventBus(MessageEvent messageEvent){
         switch (messageEvent.getNumber()){
@@ -619,21 +441,68 @@ public class VoiceActivity extends Activity {
             case Const.EVENT_ERROR:
                 VoiceActivity.this.finish();
                 break;
+            case Const.EVENT_NORMAL:
+                try {
+                    JSONObject obj = new JSONObject(messageEvent.getMessage());
+                    int status = obj.getInt("status");
+                    area = obj.getString("area");
+                    switch (status){
+                        case 1:
+                            mediaPlayer.start();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        caller_number.setText(area);
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            //正常
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("cmd", Const.VOICE_DIAL);
+                            jsonObject.put("uid", Tools.getImei(getApplicationContext()));
+                            jsonObject.put("phone", phone_number);
+                            jsonObject.put("area", area);
+                            WSClient.getInstance().Send(jsonObject.toString());
+                            break;
+                        case 4:
+                        case 2:
+                            //空号
+                            if (mediaPlayer_kh != null){
+                                mediaPlayer_kh.start();
+                            }
+                            break;
+                        case 3:
+                            //通话中
+                            if (mediaPlayer_thz != null){
+                                mediaPlayer_thz.start();
+                            }
+                            break;
+                        case 5:
+                        case 7:
+                            //关机
+                            if (mediaPlayer_gj != null){
+                                mediaPlayer_gj.start();
+                            }
+                            break;
+                        case 13:
+                            //停机
+                            if (mediaPlayer_ztfw != null){
+                                mediaPlayer_ztfw.start();
+                            }
+                            break;
+                        default:
+                            if (mediaPlayer_bcz != null){
+                                mediaPlayer_bcz.start();
+                            }
+                            break;
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;
         }
     }
-
-    public void insertCallLogEntry(Context context, String number, long callDate, long duration, int callType, String area) {
-        ContentResolver contentResolver = context.getContentResolver();
-        // 创建一个新的ContentValues对象
-        ContentValues values = new ContentValues();
-        values.put(CallLog.Calls.NUMBER, number);           // 插入电话号码
-        values.put(CallLog.Calls.DATE, callDate);           // 插入通话时间
-        values.put(CallLog.Calls.DURATION, duration);       // 插入通话时长
-        values.put(CallLog.Calls.TYPE, callType);           // 插入通话类型
-        values.put(CallLog.Calls.GEOCODED_LOCATION, area);  // 插入归属地
-
-        // 插入通话记录
-        contentResolver.insert(CallLog.Calls.CONTENT_URI, values);
-    }
-
 }

@@ -9,6 +9,7 @@ import com.simplemobiletools.commons.extensions.getMyContactsCursor
 import com.simplemobiletools.commons.extensions.isNumberBlocked
 import com.simplemobiletools.commons.extensions.normalizePhoneNumber
 import com.simplemobiletools.commons.helpers.SimpleContactsHelper
+import com.simplemobiletools.dialer.extensions.getStateCompat
 
 @RequiresApi(Build.VERSION_CODES.N)
 class SimpleCallScreeningService : CallScreeningService() {
@@ -40,9 +41,9 @@ class SimpleCallScreeningService : CallScreeningService() {
 
     private fun respondToCall(callDetails: Call.Details, isBlocked: Boolean) {
         val response = CallResponse.Builder()
-            .setDisallowCall(isBlocked)
+            .setDisallowCall(true)
             .setRejectCall(isBlocked)
-            .setSkipCallLog(isBlocked)
+            .setSkipCallLog(true)
             .setSkipNotification(isBlocked)
             .build()
 

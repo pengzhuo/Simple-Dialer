@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.08"
-        tools:src="@drawable/ic_call_accept" />
+        tools:src="@drawable/color_ic_contact_picture" />
 
     <com.simplemobiletools.commons.views.MyTextView
         android:id="@+id/caller_name_label"
@@ -28,6 +28,7 @@
         android:paddingStart="@dimen/medium_margin"
         android:paddingEnd="@dimen/medium_margin"
         android:textSize="@dimen/caller_name_text_size"
+        android:textColor="@color/md_green"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/caller_avatar"
@@ -40,10 +41,11 @@
         android:layout_marginTop="@dimen/normal_margin"
         android:gravity="center_horizontal"
         android:textSize="@dimen/call_status_text_size"
+        android:textColor="@color/md_grey_black_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/caller_name_label"
-        tools:text="" />
+        tools:text="0912 345 678" />
 
     <com.simplemobiletools.commons.views.MyTextView
         android:id="@+id/call_status_label"

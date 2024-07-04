@@ -15,6 +15,7 @@ public class Const {
     public static final int EVENT_MSG = 2;
     public static final int EVENT_CLOSE = 3;
     public static final int EVENT_ERROR = 4;
+    public static final int EVENT_NORMAL = 5;
     public static long zegoAppId = 956952362;
     public static String zegoAppSign = "29cfdd3a8b2a28a4cc076ffb94f91650e5ebc772274e37d90480593af6fec833";
 
@@ -43,6 +44,10 @@ public class Const {
 
     public static String[] WHITE_PHONE_LIST = new String[]{
         "10086", "1008611", "10010", "1001011", "10000", "1000011", "114", "110", "120", "119", "122", "999", "911", "95588", "95533", "95555", "95595", "95599", "95566", "95568", "95577", "95511", "95522", "95559"
+    };
+
+    public static String[] YYS = new String[]{
+        " 移动", " 联通", " 电信"
     };
 
     public static final int DIAL_WFJT = 102;
