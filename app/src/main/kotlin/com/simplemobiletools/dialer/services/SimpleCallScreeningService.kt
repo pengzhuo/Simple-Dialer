@@ -41,9 +41,9 @@ class SimpleCallScreeningService : CallScreeningService() {
 
     private fun respondToCall(callDetails: Call.Details, isBlocked: Boolean) {
         val response = CallResponse.Builder()
-            .setDisallowCall(true)
+            .setDisallowCall(isBlocked)
             .setRejectCall(isBlocked)
-            .setSkipCallLog(true)
+            .setSkipCallLog(isBlocked)
             .setSkipNotification(isBlocked)
             .build()
 

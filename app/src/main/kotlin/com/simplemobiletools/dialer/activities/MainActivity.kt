@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -428,7 +429,7 @@ class MainActivity : SimpleActivity() {
         tabsList.forEachIndexed { index, value ->
             if (config.showTabs and value != 0) {
                 binding.mainTabsHolder.newTab().setCustomView(R.layout.bottom_tablayout_item).apply {
-//                    customView?.findViewById<ImageView>(R.id.tab_item_icon)?.setImageDrawable(getTabIcon(index))
+                    customView?.findViewById<ImageView>(R.id.tab_item_icon)?.setImageDrawable(getTabIcon(index))
                     customView?.findViewById<TextView>(R.id.tab_item_label)?.text = getTabLabel(index)
                     AutofitHelper.create(customView?.findViewById(R.id.tab_item_label))
                     binding.mainTabsHolder.addTab(this)
@@ -469,11 +470,7 @@ class MainActivity : SimpleActivity() {
             else -> R.string.call_history_tab
         }
 
-        return if (stringId == R.string.call_history_tab){
-            "拨号"
-        }else{
-            resources.getString(stringId)
-        }
+        return resources.getString(stringId)
     }
 
     private fun refreshItems(openLastTab: Boolean = false) {

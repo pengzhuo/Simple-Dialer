@@ -85,6 +85,7 @@ class CallActivity : SimpleActivity() {
             return
         }
 
+        updateTextColors(binding.callHolder)
         initButtons()
         audioManager.mode = AudioManager.MODE_IN_CALL
         addLockScreenFlags()
