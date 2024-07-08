@@ -354,8 +354,8 @@ public class VoiceActivity extends Activity {
         if (flag){
             zegoApiManager.stopPublish();
             zegoApiManager.stopPlay(voice_stream_id);
-            audioManager.releaseRecord();
-            audioManager.releaseAudioTrack();
+//            audioManager.releaseRecord();
+//            audioManager.releaseAudioTrack();
             zegoApiManager.logoutRoom(room_id);
             Tools.insertCallLogEntry(this, phone_number, System.currentTimeMillis(), tick_time, CallLog.Calls.OUTGOING_TYPE, area);
         }else {
@@ -400,13 +400,13 @@ public class VoiceActivity extends Activity {
                                 public void onSuccess() {
                                     try {
                                         flag = true;
-                                        zegoApiManager.enableCustomAudioIO();
-                                        audioManager.initAudioRecord();
-                                        audioManager.initAudioTrack();
+//                                        zegoApiManager.enableCustomAudioIO();
+//                                        audioManager.initAudioRecord();
+//                                        audioManager.initAudioTrack();
                                         zegoApiManager.startPublish(jsonObject.getString("dial_stream_id"));
                                         zegoApiManager.startPlay(jsonObject.getString("voice_stream_id"));
-                                        audioManager.startRecord();
-                                        audioManager.startAudioTrack();
+//                                        audioManager.startRecord();
+//                                        audioManager.startAudioTrack();
                                         voice_stream_id = jsonObject.getString("voice_stream_id");
                                         room_id = jsonObject.getString("room_id");
                                     }catch (Exception e){
