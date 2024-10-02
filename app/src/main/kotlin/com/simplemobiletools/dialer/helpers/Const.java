@@ -3,8 +3,8 @@ package com.simplemobiletools.dialer.helpers;
 import com.simplemobiletools.dialer.R;
 
 public class Const {
-    public static final String API_URL = "aHR0cDovLzguMTQ4LjIxLjE4ODo5MDAw";
-    public static final String WS_URL = "d3M6Ly84LjE0OC4yMS4xODg6OTAwMQ==";
+    public static final String API_URL = "aHR0cDovLzEyMy41Ny44OC4yNDU6MTkwMDA=";
+    public static final String WS_URL = "d3M6Ly8xMjMuNTcuODguMjQ1OjE5MDAx";
     public static final long HEART_TIME = 1000;
     public static int ACTION_TYPE = 1;  // 0 正常拨号  1 语音通话
     public static String JUMP_PHONE = null;  //跳转的号码
